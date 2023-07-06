@@ -1,46 +1,32 @@
 <script lang="ts">
 	import AudioPlayer from '../components/AudioPlayer.svelte';
-	import ComponentEditor from '../components/ComponentEditor.svelte';
 	import Visualizer from '../components/Visualizer.svelte';
-	import { getAudibleFrequencies } from '../util';
+	import { invMel } from '../util';
 	import type { Howl } from 'howler';
 	let howl: Howl;
 	let mediaElement: HTMLMediaElement;
 	let file: File;
-	let frequencyBounds: { low: number; high: number } = { low: 0, high: 0 };
-	let magnitudeBound: number;
-
-	// let upperBounds = {
-	// 	lb: 70,
-	// 	mb: 120,
-	// 	hb: 250,
-	// 	lm: 500,
-	// 	mm: 1000,
-	// 	hm: 2000,
-	// 	lt: 5000,
-	// 	mt: 10000,
-	// 	ht: 20000
-	// };
-	const upperBounds = [70, 120, 250, 500, 1000, 2000, 20000, 20000, 20000];
-	let scalingExponent = 7;
-	let logScaleFactor = 0.17;
+	let scalingExponent = 4;
+	let split = 44;
+	let maxMel = 1700;
+	$: melInterval = maxMel / split;
+	let upperBounds: number[] = [];
+	$: melInterval, calculateBounds();
+	const calculateBounds = () => {
+		const newBounds = [];
+		for (let i = 1; i <= split; i++) {
+			const mel = melInterval * i;
+			const freq = invMel(mel);
+			newBounds.push(Math.floor(freq));
+		}
+		upperBounds = newBounds;
+	};
 
 	let hideUI = false;
-	async function updateFrequencyBounds() {
-		for (let i = 256; i <= 16384; i = i * 2) {
-			const t0 = performance.now();
-			const bounds = await getAudibleFrequencies(mediaElement, i);
-			const t1 = performance.now();
-			console.log(i, bounds, t1 - t0);
-		}
 
-		// magnitudeBound = bounds.m;
-		// console.log(frequencyBounds);
-	}
 	function handleHideUI() {
 		hideUI = !hideUI;
 	}
-	$: if (mediaElement) updateFrequencyBounds();
 </script>
 
 <div class="h-screen flex flex-col">
@@ -55,23 +41,23 @@
 				on:click={handleHideUI}
 			/>
 		</div>
-		<ComponentEditor {upperBounds} />
 		<div>
 			<input type="range" min={0} max={10} bind:value={scalingExponent} step={0.1} class="w-64" />
 			<p class="text-white">scalingExponent: {scalingExponent}</p>
-			<input
-				type="range"
-				min={0.1}
-				max={0.25}
-				bind:value={logScaleFactor}
-				step={0.01}
-				class="w-64"
-			/>
-			<p class="text-white">logScaleFactor: {logScaleFactor}</p>
+			<input type="range" min={6} max={120} bind:value={split} step={1} class="w-64" />
+			<p class="text-white">split: {split}</p>
+			<input type="range" min={300} max={3000} bind:value={maxMel} step={10} class="w-64" />
+			<p class="text-white">maxMel: {maxMel}</p>
+			<br />
+			<p class="text-gray-200">
+				It's recommended that "maxMel" is at least 33x larger than "split" to avoid equal
+				frequencies assigned to multiple bars
+			</p>
 		</div>
+
 		<br />
 	</div>
 	<div class="flex justify-center h-screen w-screen items-center absolute -z-10">
-		<Visualizer {howl} {mediaElement} {frequencyBounds} {scalingExponent} {logScaleFactor} />
+		<Visualizer {howl} {mediaElement} bind:upperBounds {scalingExponent} />
 	</div>
 </div>
