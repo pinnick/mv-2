@@ -5,7 +5,6 @@
 	export let mediaElement: HTMLMediaElement;
 	export let upperBounds: number[];
 	export let scalingExponent: number;
-	export let minExponent: number;
 	let canvas: HTMLCanvasElement;
 	let canvasCtx: CanvasRenderingContext2D;
 	let audioContext: AudioContext;
