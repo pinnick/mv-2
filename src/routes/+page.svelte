@@ -2,10 +2,7 @@
 	import AudioPlayer from '../components/AudioPlayer.svelte';
 	import Visualizer from '../components/Visualizer.svelte';
 	import { invMel } from '../util';
-	import type { Howl } from 'howler';
-	let howl: Howl;
 	let mediaElement: HTMLMediaElement;
-	let file: File;
 	let scalingExponent = 4;
 	let split = 44;
 	let maxMel = 1700;
@@ -34,9 +31,7 @@
 		<div class="">
 			<AudioPlayer
 				on:audioReady={(e) => {
-					howl = e.detail.howl;
 					mediaElement = e.detail.mediaElement;
-					file = e.detail.file;
 				}}
 				on:click={handleHideUI}
 			/>
@@ -58,6 +53,6 @@
 		<br />
 	</div>
 	<div class="flex justify-center h-screen w-screen items-center absolute -z-10">
-		<Visualizer {howl} {mediaElement} bind:upperBounds {scalingExponent} />
+		<Visualizer {mediaElement} bind:upperBounds {scalingExponent} />
 	</div>
 </div>

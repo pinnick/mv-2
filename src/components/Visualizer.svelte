@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import type { Howl } from 'howler';
 	import { fillRoundRect } from '../util';
 
-	export let howl: Howl;
 	export let mediaElement: HTMLMediaElement;
 	export let upperBounds: number[];
 	export let scalingExponent: number;
@@ -113,7 +111,7 @@
 		animationId = requestAnimationFrame(draw);
 	}
 
-	$: if (howl && mediaElement) {
+	$: if (mediaElement) {
 		if (!analyser) {
 			audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 			analyser = audioContext.createAnalyser();
