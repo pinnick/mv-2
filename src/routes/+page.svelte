@@ -6,11 +6,12 @@
 	let scalingExponent = 4;
 	let split = 44;
 	let maxMel = 1700;
+	let minExponent = 0.004;
 	$: melInterval = maxMel / split;
 	let upperBounds: number[] = [];
 	$: melInterval, calculateBounds();
 	const calculateBounds = () => {
-		const newBounds = [];
+		const newBounds = [0];
 		for (let i = 1; i <= split; i++) {
 			const mel = melInterval * i;
 			const freq = invMel(mel);
@@ -37,9 +38,18 @@
 			/>
 		</div>
 		<div>
+			<input
+				type="range"
+				min={0.002}
+				max={0.006}
+				bind:value={minExponent}
+				step={0.0001}
+				class="w-64"
+			/>
+			<p class="text-white">minExponent: {minExponent}</p>
 			<input type="range" min={0} max={10} bind:value={scalingExponent} step={0.1} class="w-64" />
 			<p class="text-white">scalingExponent: {scalingExponent}</p>
-			<input type="range" min={6} max={120} bind:value={split} step={1} class="w-64" />
+			<input type="range" min={6} max={100} bind:value={split} step={1} class="w-64" />
 			<p class="text-white">split: {split}</p>
 			<input type="range" min={300} max={3000} bind:value={maxMel} step={10} class="w-64" />
 			<p class="text-white">maxMel: {maxMel}</p>
@@ -53,6 +63,6 @@
 		<br />
 	</div>
 	<div class="flex justify-center h-screen w-screen items-center absolute -z-10">
-		<Visualizer {mediaElement} bind:upperBounds {scalingExponent} />
+		<Visualizer {mediaElement} bind:upperBounds {scalingExponent} {minExponent} />
 	</div>
 </div>
