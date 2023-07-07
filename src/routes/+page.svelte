@@ -4,8 +4,8 @@
 	import { invMel } from '../util';
 	let mediaElement: HTMLMediaElement;
 	let scalingExponent = 4;
-	let split = 44;
-	let maxMel = 1700;
+	let split = 100;
+	let maxMel = 3000;
 	$: melInterval = maxMel / split;
 	let upperBounds: number[] = [];
 	$: melInterval, calculateBounds();
@@ -44,10 +44,7 @@
 			<input type="range" min={300} max={3000} bind:value={maxMel} step={10} class="w-64" />
 			<p class="text-white">maxMel: {maxMel}</p>
 			<br />
-			<p class="text-gray-200">
-				It's recommended that "maxMel" is at least 33x larger than "split" to avoid equal
-				frequencies assigned to multiple bars
-			</p>
+			<p class="text-gray-200">Last update: July 07, 2023 10:48 AM EST</p>
 		</div>
 
 		<br />
