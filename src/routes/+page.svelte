@@ -6,6 +6,10 @@
 	let scalingExponent = 3.3;
 	let split = 75;
 	let maxMel = 2850;
+	let max = 35;
+	let lower = 3.3;
+	let upper = 6;
+	let stepDivisor = 1000;
 	$: melInterval = maxMel / split;
 	let upperBounds: number[] = [];
 	$: melInterval, calculateBounds();
@@ -37,19 +41,25 @@
 			/>
 		</div>
 		<div>
-			<input type="range" min={0} max={10} bind:value={scalingExponent} step={0.1} class="w-64" />
-			<p class="text-white">scalingExponent: {scalingExponent}</p>
+			<!-- <input type="range" min={1} max={344} bind:value={max} step={1} class="w-64" />
+			<p class="text-white">max: {max}</p>
+			<input type="range" min={0} max={10} bind:value={lower} step={0.1} class="w-64" />
+			<p class="text-white">lower: {lower}</p>
+			<input type="range" min={0} max={10} bind:value={upper} step={0.1} class="w-64" />
+			<p class="text-white">upper: {upper}</p>
+			<input type="range" min={10} max={2000} bind:value={stepDivisor} step={10} class="w-64" />
+			<p class="text-white">stepDivisor: {stepDivisor}</p> -->
 			<input type="range" min={6} max={100} bind:value={split} step={1} class="w-64" />
 			<p class="text-white">split: {split}</p>
 			<input type="range" min={300} max={3000} bind:value={maxMel} step={10} class="w-64" />
 			<p class="text-white">maxMel: {maxMel}</p>
 			<br />
-			<p class="text-gray-200">Last update: January 16, 2024 10:17 PM EST</p>
+			<p class="text-gray-200">Last update: January 18, 2024 7:00 PM EST</p>
 		</div>
 
 		<br />
 	</div>
 	<div class="flex justify-center h-screen w-screen items-center absolute -z-10">
-		<Visualizer {mediaElement} bind:upperBounds {scalingExponent} />
+		<Visualizer {mediaElement} bind:upperBounds {max} {lower} {upper} {stepDivisor}/>
 	</div>
 </div>

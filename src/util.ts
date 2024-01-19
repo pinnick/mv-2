@@ -21,3 +21,20 @@ export function fillRoundRect(
 	ctx.closePath();
 	ctx.fill();
 }
+export const findDynamicScalingExponent = (max:number, lower:number, upper:number, lowerIndex:number):number => {
+	const diff = upper - lower;
+
+	const change = (lowerIndex / max) * (diff);
+	const dynamic = upper - change;
+
+	if(dynamic < lower) return lower;
+
+	return dynamic;
+}
+export const stepper = (scaledValue: number, lowerIndex:number, divisor: number) => {
+	const stepped = scaledValue + (lowerIndex / divisor) * scaledValue;
+
+	if(stepped > 1) return 1
+	
+	return stepped
+}

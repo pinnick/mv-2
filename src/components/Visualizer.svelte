@@ -1,10 +1,14 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { fillRoundRect } from '../util';
+	import { fillRoundRect, findDynamicScalingExponent, stepper } from '../util';
 
 	export let mediaElement: HTMLMediaElement;
 	export let upperBounds: number[];
-	export let scalingExponent: number;
+	// export let scalingExponent: number;
+	export let max: number; 
+	export let lower: number;
+	export let upper: number;
+	export let stepDivisor:number;
 	let canvas: HTMLCanvasElement;
 	let canvasCtx: CanvasRenderingContext2D;
 	let audioContext: AudioContext;
@@ -73,13 +77,13 @@
 			let totalPower = 0;
 			let countedBins = 0;
 			const totalBins = upperIndex - lowerIndex + 1;
-
+			
 			for (let j = lowerIndex; j <= upperIndex; j++) {
 				const power = dataArray[j];
-				if (power > 100 - Math.sqrt(barCount * totalBins)) {
+				// if (power > 100 - Math.sqrt(barCount * totalBins)) {
 					totalPower += power;
 					countedBins++;
-				}
+				// }
 			}
 			// If averagePower resolves to NaN, set to 0
 			const averagePower = totalPower / countedBins || 0;
@@ -92,10 +96,11 @@
 			// perceived difference in volume (as human hearing is logarithmic, not linear).
 			const scaledValue = Math.pow(10, dBValue / 20);
 
-			// Increase the apparent difference in volume between bars by raising the
-			// normalized value to a power. A common choice is 2 for a quadratic difference,
-			// but the scalingExponent can be any positive number.
-			const scaledLoudness = Math.pow(scaledValue, scalingExponent);
+			const steppedValue = stepper(scaledValue, lowerIndex, stepDivisor)
+
+			const dynamicScalingExponent = findDynamicScalingExponent(max, lower, upper, upperIndex)
+			const scaledLoudness = Math.pow(steppedValue, dynamicScalingExponent);
+
 			// console.log(scaledLoudness);
 			// Calculate the height of the bar. It's either the scaled loudness multiplied by
 			// the height of the canvas or a minimum value of 10, whichever is larger.
@@ -103,7 +108,7 @@
 			const barHeight = Math.max(scaledLoudness * canvas.height, 10);
 
 			// Calculate the color value based on the normalized value. It will be dim for low volumes and pure white for higher volumes.
-			const color = scaledValue * 255 + 150;
+			const color = steppedValue * 255 + 175;
 
 			// Set the color for the bar.
 			canvasCtx.fillStyle = `rgb(${color}, ${color}, ${color})`;
