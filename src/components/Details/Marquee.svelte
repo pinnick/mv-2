@@ -45,7 +45,11 @@
 			class="flex"
 			style="transform: translateX({offset}px); color: {bold ? 'white' : 'lightgray'}"
 		>
-			<span class="mr-10 ml-10 flex items-center" bind:clientWidth={textWidth}
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<span
+				class="mr-10 ml-10 flex items-center"
+				bind:clientWidth={textWidth}
+				on:click={() => (explicit = !explicit)}
 				><Text {text} {explicit} />
 			</span>
 			{#if shouldScroll}
