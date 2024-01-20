@@ -40,7 +40,7 @@
 
 			const dynamicScalingExponent = findDynamicScalingExponent(35, 3, 6, upperIndex);
 
-			const steppedValue = stepper(topBinAvg, lowerIndex, 1500);
+			const steppedValue = stepper(topBinAvg, lowerIndex, 2000);
 
 			const scaledBin = scaleExponentially(steppedValue, dynamicScalingExponent);
 
@@ -63,7 +63,7 @@
 		if (animationId) {
 			cancelAnimationFrame(animationId);
 		}
-		interval = setInterval(calcHeights, 1000 / refreshRate);
+		interval = setInterval(calcHeights, 1300 / refreshRate);
 	}
 
 	$: if (mediaElement) {
