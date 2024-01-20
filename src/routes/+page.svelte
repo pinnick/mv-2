@@ -32,12 +32,6 @@
 		upperBounds = newBounds;
 	};
 
-	let hideUI = false;
-
-	function handleHideUI() {
-		hideUI = !hideUI;
-	}
-
 	function toggle() {
 		if (mediaElement) {
 			if (mediaElement.paused) {
