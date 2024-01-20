@@ -6,6 +6,14 @@ declare global {
 		// interface Locals {}
 		// interface PageData {}
 		// interface Platform {}
+		interface Metadata {
+			title: string;
+			artist: string;
+			album: string;
+			explicit: booolean;
+			cover: string | null;
+			video?: string;
+		}
 		interface Properties {
 			scalingExponent: number;
 			logScaleFactor: number;
@@ -14,6 +22,7 @@ declare global {
 			linearPercentage: number;
 			bassAttenuationFactor: number;
 		}
+		type MovementState = -1 | 0 | 1;
 	}
 }
 
