@@ -66,7 +66,7 @@
 <div class="flex-none mr-16 w-8 ml-5">
 	<label
 		for="file-upload"
-		transition:fade
+		transition:fade|global
 		class="rounded-full w-7 h-7 bg-gray-400/40 hover:opacity-70 flex items-center justify-center cursor-pointer"
 	>
 		<svg viewBox="0 0 256 256" width="20" height="20" class="text-white">

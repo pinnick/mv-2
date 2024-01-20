@@ -97,7 +97,7 @@
 {#if visible}
 	<div
 		class="w-full max-w-7xl h-[500px] flex items-center justify-center gap-[2px]"
-		transition:fade
+		transition:fade|global
 		style="--duration: {1 / refreshRate}s"
 	>
 		{#each heights as dot, i (i)}
