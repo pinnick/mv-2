@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { metadata } from '$lib/store';
 	import { invMel } from '../util';
-	import { fade } from 'svelte/transition';
 	import AudioPlayer from '../components/AudioPlayer.svelte';
 	import Visualizer from '../components/Visualizer.svelte';
 	import Details from '../components/Details/Details.svelte';
@@ -63,19 +62,11 @@
 		<div class="w-[600px] flex justify-center items-center">
 			<Details />
 			<!-- More button -->
-			<div class="flex-none mr-16 w-8 ml-5">
-				<div
-					transition:fade
-					class="rounded-full w-7 h-7 bg-gray-400/40 hover:opacity-70 flex items-center justify-center cursor-pointer"
-				>
-					<svg viewBox="0 0 256 256" width="20" height="20" class="text-white">
-						<path
-							d="M156 128a28 28 0 1 1-28-28a28 28 0 0 1 28 28ZM48 100a28 28 0 1 0 28 28a28 28 0 0 0-28-28Zm160 0a28 28 0 1 0 28 28a28 28 0 0 0-28-28Z"
-							fill="currentColor"
-						/>
-					</svg>
-				</div>
-			</div>
+			<AudioPlayer
+				on:audioReady={(e) => {
+					mediaElement = e.detail.mediaElement;
+				}}
+			/>
 		</div>
 		<div class="xl:w-[452px]">
 			<Progress bind:mediaElement />
@@ -85,13 +76,7 @@
 	</div>
 	<!-- Lyrics & Vis -->
 	<div class="h-full flex flex-col justify-center items-center font-bold flex-1 text-white">
-		<Visualizer {mediaElement} bind:upperBounds scalingExponent={3} sumTotal={1} />
+		<Visualizer {mediaElement} bind:upperBounds sumTotal={1} />
 	</div>
-	<div class="absolute top-0 left-0">
-		<AudioPlayer
-			on:audioReady={(e) => {
-				mediaElement = e.detail.mediaElement;
-			}}
-		/>
-	</div>
+	<div class="absolute top-0 left-0" />
 </div>

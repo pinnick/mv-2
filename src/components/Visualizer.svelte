@@ -4,7 +4,6 @@
 	import { findDynamicScalingExponent, scaleExponentially, stepper, sumTopXInRange } from '../util';
 	export let mediaElement: HTMLMediaElement;
 	export let upperBounds: number[];
-	export let scalingExponent: number;
 	export let sumTotal: number;
 	let audioContext: AudioContext;
 	let analyser: AnalyserNode;
