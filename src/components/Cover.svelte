@@ -8,7 +8,7 @@
 		<video loop autoplay muted src={video} class="h-full w-auto rounded-xl drop-shadow-2xl" />
 	</div>
 {:else if src}
-	<img {src} alt="" class="w-auto h-full rounded-xl drop-shadow-2xl border border-neutral-800" />
+	<img {src} alt="" class="w-auto h-full rounded-xl drop-shadow-2xl border border-neutral-800/60" />
 {:else}
 	<div class="w-full aspect-square flex items-center justify-center">
 		<div class="w-3/4 aspect-square rounded-xl overflow-hidden drop-shadow-xl">
