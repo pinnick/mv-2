@@ -4,10 +4,10 @@
 	export let mediaElement: HTMLMediaElement;
 	export let upperBounds: number[];
 	// export let scalingExponent: number;
-	export let max: number; 
+	export let max: number;
 	export let lower: number;
 	export let upper: number;
-	export let stepDivisor:number;
+	export let stepDivisor: number;
 	let canvas: HTMLCanvasElement;
 	let canvasCtx: CanvasRenderingContext2D;
 	let audioContext: AudioContext;
@@ -58,7 +58,6 @@
 
 		const barWidth = 9;
 		let x = 0;
-		// console.log(dataArray);
 		for (let i = 0; i < barCount; i++) {
 			// upperBounds is an array containing upper frequency bounds for each bar.
 			const lowerFreq = upperBounds[i];
@@ -75,12 +74,12 @@
 			let totalPower = 0;
 			let countedBins = 0;
 			const totalBins = upperIndex - lowerIndex + 1;
-			
+
 			for (let j = lowerIndex; j <= upperIndex; j++) {
 				const power = dataArray[j];
 				// if (power > 100 - Math.sqrt(barCount * totalBins)) {
-					totalPower += power;
-					countedBins++;
+				totalPower += power;
+				countedBins++;
 				// }
 			}
 			// If averagePower resolves to NaN, set to 0
@@ -94,12 +93,11 @@
 			// perceived difference in volume (as human hearing is logarithmic, not linear).
 			const scaledValue = Math.pow(10, dBValue / 20);
 
-			const steppedValue = stepper(scaledValue, lowerIndex, stepDivisor)
+			const steppedValue = stepper(scaledValue, lowerIndex, stepDivisor);
 
-			const dynamicScalingExponent = findDynamicScalingExponent(max, lower, upper, upperIndex)
+			const dynamicScalingExponent = findDynamicScalingExponent(max, lower, upper, upperIndex);
 			const scaledLoudness = Math.pow(steppedValue, dynamicScalingExponent);
 
-			// console.log(scaledLoudness);
 			// Calculate the height of the bar. It's either the scaled loudness multiplied by
 			// the height of the canvas or a minimum value of 10, whichever is larger.
 

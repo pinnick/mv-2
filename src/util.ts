@@ -122,7 +122,6 @@ export const bufferToDataURL = (buffer: ArrayBuffer, imageType: string): string 
 };
 export const artistsArrayToString = (artists: string[]): string => {
 	let str = '';
-	console.log(artists.length);
 	artists.map((a, i) => {
 		switch (i) {
 			case 0:

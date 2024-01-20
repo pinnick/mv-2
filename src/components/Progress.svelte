@@ -32,7 +32,6 @@
 	}
 
 	$: if (mediaElement) {
-		console.log('waiting to load');
 		initialize();
 		mediaElement.addEventListener('loadeddata', initialize);
 	}
@@ -42,7 +41,6 @@
 	}
 	function initialize() {
 		if (mediaElement) {
-			console.log('init');
 			mediaElement.removeEventListener('durationchange', syncDuration);
 			mediaElement.addEventListener('durationchange', syncDuration);
 			syncDuration();

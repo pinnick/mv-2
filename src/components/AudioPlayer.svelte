@@ -15,16 +15,6 @@
 			queue = [...target.files];
 			const url = URL.createObjectURL(queue[0]);
 
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				const buffer = e?.target?.result;
-				if (!buffer) {
-					console.log('cant find');
-					return;
-				}
-			};
-			reader.readAsArrayBuffer(queue[0]);
-
 			loadSong(0, url);
 		}
 	}
@@ -40,15 +30,14 @@
 				);
 			}
 		}
-		console.log(cover);
+
 		metadata.set({
 			title: newMetadata.common.title || '',
 			artist: artistsArrayToString(newMetadata.common.artist?.split(', ') || []),
 			album: newMetadata.common.album || '',
-			explicit: false,
+			explicit: true,
 			cover: cover
 		});
-		console.log(newMetadata);
 		let nextURL: string;
 
 		if (mediaElement) URL.revokeObjectURL(mediaElement.src);
