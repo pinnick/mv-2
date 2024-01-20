@@ -3,7 +3,7 @@
 	import { fade } from 'svelte/transition';
 	import { metadata } from '$lib/store';
 	import { fetchFromUrl } from 'music-metadata-browser';
-	import { bufferToDataURL } from '../util';
+	import { artistsArrayToString, bufferToDataURL } from '../util';
 	const dispatch = createEventDispatcher();
 
 	let mediaElement: HTMLMediaElement;
@@ -43,7 +43,7 @@
 		console.log(cover);
 		metadata.set({
 			title: newMetadata.common.title || '',
-			artist: newMetadata.common.artist || '',
+			artist: artistsArrayToString(newMetadata.common.artist?.split(', ') || []),
 			album: newMetadata.common.album || '',
 			explicit: false,
 			cover: cover

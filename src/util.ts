@@ -120,3 +120,21 @@ export const bufferToDataURL = (buffer: ArrayBuffer, imageType: string): string 
 	let base64String = window.btoa(binary);
 	return `data:${imageType};base64,` + base64String;
 };
+export const artistsArrayToString = (artists: string[]): string => {
+	let str = '';
+	console.log(artists.length);
+	artists.map((a, i) => {
+		switch (i) {
+			case 0:
+				str += `${a}`;
+				break;
+			case artists.length - 1:
+				str += ` & ${a}`;
+				break;
+			default:
+				str += `, ${a}`;
+				break;
+		}
+	});
+	return str;
+};
