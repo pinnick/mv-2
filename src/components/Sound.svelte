@@ -2,17 +2,17 @@
 	import Bar from './Bar.svelte';
 	import { buttons } from '../constants';
 	import { onDestroy } from 'svelte';
-	export let mediaElement: HTMLMediaElement | undefined;
+	import { mediaElement } from '$lib/store';
 	let element: HTMLDivElement;
 	let sound: number = 0.75;
 	let barWidth: number;
 	let fromLeft: number;
 
-	$: mediaElement, syncVolume();
-	$: sound, mediaElement && (mediaElement.volume = sound);
+	$: $mediaElement, syncVolume();
+	$: sound, $mediaElement && ($mediaElement.volume = sound);
 
 	function syncVolume() {
-		if (mediaElement && sound !== mediaElement.volume) sound = mediaElement.volume;
+		if ($mediaElement && sound !== $mediaElement.volume) sound = $mediaElement.volume;
 	}
 
 	function handleMouseDown(e: MouseEvent) {

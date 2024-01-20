@@ -4,9 +4,9 @@
 	import { metadata } from '$lib/store';
 	import { fetchFromUrl } from 'music-metadata-browser';
 	import { artistsArrayToString, bufferToDataURL } from '../util';
+	import { mediaElement } from '$lib/store';
 	const dispatch = createEventDispatcher();
 
-	let mediaElement: HTMLMediaElement;
 	let ready = false;
 	let queue: File[] = [];
 	function handleFileUpload(e: Event) {
@@ -40,20 +40,15 @@
 		});
 		let nextURL: string;
 
-		if (mediaElement) URL.revokeObjectURL(mediaElement.src);
-		mediaElement = new Audio(url);
+		if ($mediaElement) URL.revokeObjectURL($mediaElement.src);
+		$mediaElement = new Audio(url);
 
-		mediaElement.oncanplay = async () => {
+		$mediaElement.oncanplay = async () => {
 			ready = true;
 			if (queue[i + 1]) nextURL = URL.createObjectURL(queue[i + 1]);
-
-			dispatch('audioReady', {
-				mediaElement,
-				file: queue[i]
-			});
 		};
 
-		mediaElement.onended = () => {
+		$mediaElement.onended = () => {
 			if (queue[i + 1]) {
 				loadSong(i + 1, nextURL);
 				toggle(); // play song immediately once loaded
@@ -61,9 +56,9 @@
 		};
 	}
 	function toggle() {
-		if (mediaElement) {
-			if (mediaElement.paused) mediaElement.play();
-			else mediaElement.pause();
+		if ($mediaElement) {
+			if ($mediaElement.paused) $mediaElement.play();
+			else $mediaElement.pause();
 		}
 	}
 </script>

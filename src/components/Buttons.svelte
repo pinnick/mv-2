@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onDestroy, createEventDispatcher } from 'svelte';
 	import Button from './buttons/Button.svelte';
-	export let mediaElement: HTMLMediaElement | undefined;
+	import { mediaElement } from '$lib/store';
 	let playing = false;
 	let listening = false;
 	let currentSrc = '';
 	const dispatch = createEventDispatcher();
-	$: if (mediaElement && mediaElement.src !== currentSrc) {
-		currentSrc = mediaElement.src;
+	$: if ($mediaElement && $mediaElement.src !== currentSrc) {
+		currentSrc = $mediaElement.src;
 		listening = true;
 		removeListeners();
 		addListeners();
@@ -17,22 +17,22 @@
 		dispatch('toggle');
 	};
 	function removeListeners() {
-		if (mediaElement) {
+		if ($mediaElement) {
 			playing = false;
-			mediaElement.removeEventListener('playing', () => {
+			$mediaElement.removeEventListener('playing', () => {
 				playing = true;
 			});
-			mediaElement.removeEventListener('pause', () => {
+			$mediaElement.removeEventListener('pause', () => {
 				playing = false;
 			});
 		}
 	}
 	function addListeners() {
-		if (mediaElement) {
-			mediaElement.addEventListener('playing', () => {
+		if ($mediaElement) {
+			$mediaElement.addEventListener('playing', () => {
 				playing = true;
 			});
-			mediaElement.addEventListener('pause', () => {
+			$mediaElement.addEventListener('pause', () => {
 				playing = false;
 			});
 		}

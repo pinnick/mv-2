@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { metadata } from '$lib/store';
 	import { invMel } from '../util';
+	import { mediaElement } from '$lib/store';
 	import AudioPlayer from '../components/AudioPlayer.svelte';
 	import Visualizer from '../components/Visualizer.svelte';
 	import Details from '../components/Details/Details.svelte';
@@ -14,7 +15,6 @@
 	// let upper = 6;
 	// let stepDivisor = 1000;
 
-	let mediaElement: HTMLMediaElement;
 	let split = 75;
 	let maxMel = 2850;
 
@@ -33,12 +33,12 @@
 	};
 
 	function toggle() {
-		if (mediaElement) {
-			if (mediaElement.paused) {
-				mediaElement.play();
-			} else {
-				mediaElement.pause();
-			}
+		if ($mediaElement) {
+			if ($mediaElement.paused) {
+				// hack to remove setInterval bug. we will use rust for calculations soon.
+				$mediaElement.currentTime = Math.floor($mediaElement.currentTime * 10) / 10;
+				$mediaElement.play();
+			} else $mediaElement.pause();
 		}
 	}
 </script>
@@ -56,21 +56,17 @@
 		<div class="w-[600px] flex justify-center items-center">
 			<Details />
 			<!-- More button -->
-			<AudioPlayer
-				on:audioReady={(e) => {
-					mediaElement = e.detail.mediaElement;
-				}}
-			/>
+			<AudioPlayer />
 		</div>
 		<div class="xl:w-[452px]">
-			<Progress bind:mediaElement />
-			<Buttons bind:mediaElement on:toggle={toggle} />
-			<Sound bind:mediaElement />
+			<Progress />
+			<Buttons on:toggle={toggle} />
+			<Sound />
 		</div>
 	</div>
 	<!-- Lyrics & Vis -->
 	<div class="h-full flex flex-col justify-center items-center font-bold flex-1 text-white">
-		<Visualizer {mediaElement} bind:upperBounds sumTotal={1} />
+		<Visualizer bind:upperBounds sumTotal={1} />
 	</div>
 	<div class="absolute top-0 left-0" />
 </div>

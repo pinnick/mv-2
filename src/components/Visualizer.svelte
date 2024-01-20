@@ -2,7 +2,7 @@
 	import { onDestroy } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { findDynamicScalingExponent, scaleExponentially, stepper, sumTopXInRange } from '../util';
-	export let mediaElement: HTMLMediaElement;
+	import { mediaElement } from '$lib/store';
 	export let upperBounds: number[];
 	export let sumTotal: number;
 	let audioContext: AudioContext;
@@ -13,14 +13,15 @@
 	let source: MediaElementAudioSourceNode;
 	let fileSrc: string;
 	// Each dot's height ranges from [0, 320]
-	let interval: NodeJS.Timer;
-	$: visible = !!mediaElement;
+	let interval: NodeJS.Timeout;
+	$: visible = !!$mediaElement;
 	$: barCount = upperBounds.length - 1;
 	let heights: number[] = new Array(barCount).fill(0);
 	const refreshRate = 144;
 
 	const calcHeights = () => {
 		if (!analyser) return;
+		Math.random() < 0.01 && console.log('RAN.');
 		analyser.getByteFrequencyData(dataArray);
 		heights = [];
 		for (let i = 0; i < barCount; i++) {
@@ -46,6 +47,7 @@
 
 			heights.push(scaledBin);
 		}
+		// requestAnimationFrame(calcHeights);
 	};
 
 	let audioContextCreated = false;
@@ -63,20 +65,24 @@
 		if (animationId) {
 			cancelAnimationFrame(animationId);
 		}
-		interval = setInterval(calcHeights, 1300 / refreshRate);
+		// animationId = requestAnimationFrame(calcHeights);
+		clearInterval(interval);
+		interval = setInterval(calcHeights, 1000 / refreshRate);
 	}
 
-	$: if (mediaElement) {
-		if (mediaElement.src !== fileSrc) {
-			fileSrc = mediaElement.src;
+	$: if ($mediaElement) {
+		if ($mediaElement.src !== fileSrc) {
+			console.log('reinitialization.');
+			fileSrc = $mediaElement.src;
 			if (source) source.disconnect();
 
-			source = audioContext.createMediaElementSource(mediaElement);
+			source = audioContext.createMediaElementSource($mediaElement);
 			source.connect(analyser);
 			analyser.connect(audioContext.destination);
 		}
 	}
 	onDestroy(() => {
+		console.log('destruction.');
 		if (source) {
 			source.disconnect();
 		}
