@@ -48,9 +48,9 @@
 			if (queue[i + 1]) nextURL = URL.createObjectURL(queue[i + 1]);
 		};
 
-		$mediaElement.onended = () => {
+		$mediaElement.onended = async () => {
 			if (queue[i + 1]) {
-				loadSong(i + 1, nextURL);
+				await loadSong(i + 1, nextURL);
 				toggle(); // play song immediately once loaded
 			}
 		};
