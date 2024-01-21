@@ -12,15 +12,15 @@
 	let fromLeft: number;
 	let interval: NodeJS.Timer;
 	let mouseDown = false;
-	let progressString = '- - : - -';
-	let remainingString = '- - : - -';
+	let progressString = '––:––';
+	let remainingString = '––:––';
 
 	function updateStrings() {
 		if ($mediaElement) {
 			const flooredProgress = Math.floor(progress);
 			const roundedRemaining = Math.floor(Math.ceil($mediaElement.duration) - progress);
 			progressString = formatTime(flooredProgress);
-			remainingString = '-' + formatTime(roundedRemaining);
+			remainingString = '–' + formatTime(roundedRemaining);
 		}
 	}
 	$: progress || fileSrc, updateStrings();
@@ -102,7 +102,7 @@
 	<div class="w-full" bind:clientWidth={barWidth}>
 		<Bar to={duration} current={progress} on:mousedown={handleMouseDown} active={!!$mediaElement} />
 	</div>
-	<div class="flex justify-between text-white/50 font-semibold text-sm cursor-default">
+	<div class="flex justify-between text-white/50 font-semibold text-[13px] cursor-default tracking-wider">
 		<p>{progressString}</p>
 		<p>
 			{remainingString}

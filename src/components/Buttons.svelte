@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, createEventDispatcher } from 'svelte';
-	import Button from './buttons/Button.svelte';
+	import Button from './ui/Button.svelte';
 	import { mediaElement } from '$lib/store';
 	let playing = false;
 	let listening = false;

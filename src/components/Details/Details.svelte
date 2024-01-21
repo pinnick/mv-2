@@ -1,11 +1,11 @@
 <script lang="ts">
 	import Marquee from './Marquee.svelte';
-	import { metadata } from '$lib/store';
+	import { metadata, mediaElement } from '$lib/store';
 	import { onDestroy, onMount } from 'svelte';
 
-	$: title = $metadata?.title || 'Not Playing';
+	$: title = $metadata?.title || ($mediaElement ? "Unnamed track" : 'Not Playing');
 	$: album = $metadata?.album || '';
-	$: artist = $metadata?.artist || 'Not playing';
+	$: artist = $metadata?.artist || ' ';
 	$: explicit = !!$metadata?.explicit;
 
 	let showAlbum = false;

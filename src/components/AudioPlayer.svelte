@@ -1,11 +1,9 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { metadata } from '$lib/store';
 	import { fetchFromUrl } from 'music-metadata-browser';
 	import { artistsArrayToString, bufferToDataURL } from '../util';
 	import { mediaElement } from '$lib/store';
-	const dispatch = createEventDispatcher();
 
 	let ready = false;
 	let queue: File[] = [];
@@ -35,7 +33,7 @@
 			title: newMetadata.common.title || '',
 			artist: artistsArrayToString(newMetadata.common.artist?.split(', ') || []),
 			album: newMetadata.common.album || '',
-			explicit: true,
+			explicit: false,
 			cover: cover
 		});
 		let nextURL: string;
@@ -64,10 +62,11 @@
 </script>
 
 <div class="flex-none mr-16 w-8 ml-5">
+	<!-- Three dots button -->
 	<label
 		for="file-upload"
 		transition:fade|global
-		class="rounded-full w-7 h-7 bg-gray-400/40 hover:opacity-70 flex items-center justify-center cursor-pointer"
+		class="rounded-full w-7 h-7 bg-gray-400/25 hover:opacity-70 flex items-center justify-center cursor-pointer"
 	>
 		<svg viewBox="0 0 256 256" width="20" height="20" class="text-white">
 			<path
