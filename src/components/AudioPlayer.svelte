@@ -47,6 +47,7 @@
 		};
 
 		$mediaElement.onended = async () => {
+			$mediaElement = $mediaElement;
 			if (queue[i + 1]) {
 				await loadSong(i + 1, nextURL);
 				toggle(); // play song immediately once loaded
