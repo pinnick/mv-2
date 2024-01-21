@@ -38,20 +38,24 @@
 				// hack to remove setInterval bug. we will use rust for calculations soon.
 				$mediaElement.currentTime = Math.floor($mediaElement.currentTime * 100) / 100;
 				$mediaElement.play();
-			} else $mediaElement.pause();
+				$mediaElement = $mediaElement;
+			} else {
+				$mediaElement.pause();
+				$mediaElement = $mediaElement;
+			}
 		}
 	}
 </script>
 
-<Background src={$metadata?.cover} />
+<Background />
 
 <div class="w-full h-screen flex overflow-hidden select-none">
 	<!-- Left bar -->
 	<div
 		class="xl:w-[630px] w-[400px] flex items-center justify-center px-20 flex-col gap-6 overflow-hidden my-6"
 	>
-		<div class="rounded-lg my-7 w-full relative">
-			<Cover src={$metadata?.cover} video={$metadata?.video} />
+		<div class="rounded-lg my-7 w-full h-full flex items-center justify-center">
+			<Cover />
 		</div>
 		<div class="w-[600px] flex justify-center items-center">
 			<Details />
