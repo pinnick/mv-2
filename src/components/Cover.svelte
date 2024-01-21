@@ -1,37 +1,26 @@
 <script lang="ts">
-	// export let video: string | undefined;
-	import { spring } from 'svelte/motion';
-	import { cubicInOut } from 'svelte/easing';
+	import { tweened } from 'svelte/motion';
 	import { mediaElement, metadata } from '$lib/store';
+	import { cubicInOut } from 'svelte/easing';
+	import { spring } from '../util';
+
 	$: playing = $mediaElement && !$mediaElement.paused;
-	let t1: NodeJS.Timeout;
-	let t2: NodeJS.Timeout;
-	const size = spring(0.75, {
-		stiffness: 0.1,
-		damping: 1,
-		precision: 0.002
-	});
+
+	const size = tweened<number>(undefined);
+
 	const handleEnlarge = () => {
-		size.set(1.1, { soft: 2 });
-		t1 = setTimeout(() => {
-			$size = 0.985;
-		}, 270);
-		t2 = setTimeout(() => {
-			$size = 1;
-		}, 450);
+		size.set(1, { delay: 75, duration: 550, easing: spring });
 	};
 	const handleShrink = () => {
-		size.set(0.75);
-		clearTimeout(t1);
-		clearTimeout(t2);
+		size.set(0.75, {
+			duration: 500,
+			easing: cubicInOut
+		});
 	};
+
 	$: playing ? handleEnlarge() : handleShrink();
 </script>
 
-<!-- {#if src && video}
-	<div class="">
-		<video loop autoplay muted src={video} class="h-full w-auto rounded-xl drop-shadow-2xl" />
-	</div> -->
 <div class="w-auto aspect-square h-full" style="transform: scale({$size})">
 	{#if $metadata?.cover}
 		<img
@@ -41,7 +30,7 @@
 		/>
 	{:else}
 		<div class="w-full aspect-square flex items-center justify-center">
-			<div class="w-full aspect-square rounded-xl bg-neutral-600/70 overflow-hidden">
+			<div class="w-full h-full aspect-square rounded-xl bg-neutral-600/70 overflow-hidden">
 				<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
 					<g fill="none" fill-rule="evenodd"
 						><path fill="genericJoe" class="fill-genericJoe" d="M0 0h100v100H0z" /><path
