@@ -3,7 +3,7 @@
 	import { metadata, mediaElement } from '$lib/store';
 	import { onDestroy, onMount } from 'svelte';
 
-	$: title = $metadata?.title || ($mediaElement ? "Unnamed track" : 'Not Playing');
+	$: title = $metadata?.title || ($mediaElement ? 'Unnamed track' : 'Not Playing');
 	$: album = $metadata?.album || '';
 	$: artist = $metadata?.artist || ' ';
 	$: explicit = !!$metadata?.explicit;
@@ -52,7 +52,7 @@
 	$: state, mounted && checkReset();
 </script>
 
-<div class="pl-7 xl:w-[472px] w-[272px]">
+<div class="pl-7 w-[472px]">
 	<Marquee
 		text={title}
 		{explicit}

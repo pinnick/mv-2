@@ -14,18 +14,28 @@
 	// let lower = 3.3;
 	// let upper = 6;
 	// let stepDivisor = 1000;
-
+	let innerWidth: number;
 	let split = 75;
 	let maxMel = 2850;
-
+	$: if (innerWidth < 1050) {
+		split = 15;
+	} else if (innerWidth < 1200) {
+		split = 30;
+	} else if (innerWidth < 1350) {
+		split = 45;
+	} else if (innerWidth < 1500) {
+		split = 60;
+	} else {
+		split = 75;
+	}
 	$: melInterval = maxMel / split;
 	let upperBounds: number[] = [];
-	$: melInterval, calculateBounds();
+	$: calculateBounds(melInterval);
 
-	const calculateBounds = () => {
+	const calculateBounds = (interval: number) => {
 		const newBounds = [0];
 		for (let i = 1; i <= split; i++) {
-			const mel = melInterval * i;
+			const mel = interval * i;
 			const freq = invMel(mel);
 			newBounds.push(Math.floor(freq));
 		}
@@ -35,8 +45,9 @@
 	function toggle() {
 		if ($mediaElement) {
 			if ($mediaElement.paused) {
+				if ($mediaElement.ended) $mediaElement.currentTime = 0;
 				// hack to remove setInterval bug. we will use rust for calculations soon.
-				$mediaElement.currentTime = Math.floor($mediaElement.currentTime * 100) / 100;
+				else $mediaElement.currentTime = Math.floor($mediaElement.currentTime * 100) / 100;
 				$mediaElement.play();
 				$mediaElement = $mediaElement;
 			} else {
@@ -48,13 +59,11 @@
 </script>
 
 <Background />
-
+<svelte:window bind:innerWidth />
 <div class="w-full h-screen flex overflow-hidden select-none">
 	<!-- Left bar -->
-	<div
-		class="xl:w-[630px] w-[400px] flex items-center justify-center px-20 flex-col gap-6 overflow-hidden my-6"
-	>
-		<div class="rounded-lg my-7 w-full h-full flex items-center justify-center">
+	<div class="w-[630px] flex items-center justify-center px-20 flex-col gap-6 overflow-hidden my-6">
+		<div class="rounded-lg my-7 w-full h-[480px] flex items-center justify-center">
 			<Cover />
 		</div>
 		<div class="w-[600px] flex justify-center items-center">
@@ -62,7 +71,7 @@
 			<!-- More button -->
 			<AudioPlayer />
 		</div>
-		<div class="xl:w-[452px]">
+		<div class="w-[452px]">
 			<Progress />
 			<Buttons on:toggle={toggle} />
 			<Sound />
