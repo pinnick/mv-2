@@ -1,46 +1,19 @@
 <script lang="ts">
-	import { onDestroy, createEventDispatcher } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
 	import Button from './ui/Button.svelte';
 	import { mediaElement } from '$lib/store';
 	let playing = false;
-	let listening = false;
-	let currentSrc = '';
 	const dispatch = createEventDispatcher();
-	$: if ($mediaElement && $mediaElement.src !== currentSrc) {
-		currentSrc = $mediaElement.src;
-		listening = true;
-		removeListeners();
-		addListeners();
+	$: {
+		if ($mediaElement && !$mediaElement.paused) {
+			playing = true;
+		} else {
+			playing = false;
+		}
 	}
-
 	const updatePlay = () => {
 		dispatch('toggle');
 	};
-	function removeListeners() {
-		if ($mediaElement) {
-			playing = false;
-			$mediaElement.removeEventListener('playing', () => {
-				playing = true;
-			});
-			$mediaElement.removeEventListener('pause', () => {
-				playing = false;
-			});
-		}
-	}
-	function addListeners() {
-		if ($mediaElement) {
-			$mediaElement.addEventListener('playing', () => {
-				playing = true;
-			});
-			$mediaElement.addEventListener('pause', () => {
-				playing = false;
-			});
-		}
-	}
-	onDestroy(() => {
-		listening = false;
-		removeListeners();
-	});
 </script>
 
 <div class="w-full flex items-center justify-evenly py-14">
