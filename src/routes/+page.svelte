@@ -10,6 +10,8 @@
 	import Progress from '../components/Progress.svelte';
 	import Sound from '../components/Sound.svelte';
 	import Cover from '../components/Cover.svelte';
+	// TODO: centralize the audio state.
+
 	// let max = 35;
 	// let lower = 3.3;
 	// let upper = 6;

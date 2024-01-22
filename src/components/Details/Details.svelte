@@ -5,42 +5,28 @@
 
 	$: title = $metadata?.title || ($mediaElement ? 'Unnamed track' : 'Not Playing');
 	$: album = $metadata?.album || '';
-	$: artist = $metadata?.artist || ' ';
+	$: artist = $metadata?.artist || '';
 	$: explicit = !!$metadata?.explicit;
+	$: bottomText = artist + (showAlbum && album ? ` — ${album}` : '');
 
 	let showAlbum = false;
 	let movement = 0;
-	let mounted = false;
 	let interval: NodeJS.Timeout;
-	let moving = false;
 	let state: App.MovementState[] = [-1, -1]; // -1: Too small to move, 0: Actively moving, 1: Finished moving
 	let begunMoving: number;
 	// If all elements of an array are equal to 1, ignoring the ones that are equal to -1, set all values that are equal to 1 back to 0.
-	async function beginMovement() {
-		moving = true;
+	function beginMovement() {
 		begunMoving = Date.now();
-		interval = setInterval(async () => {
+		interval = setInterval(() => {
 			if (Date.now() - begunMoving >= 3000) movement -= 1;
 		}, 28);
 	}
-	async function checkMovement() {
-		// Check if movement should be started
-		if (!moving && state.includes(0)) {
-			beginMovement();
-		}
+	function reset() {
+		state = state.map((val) => (val === 1 ? 0 : val)); // Set all enabled back to 0
+		clearInterval(interval);
+		movement = 0;
+		beginMovement();
 	}
-	async function checkReset() {
-		if (state.every((val) => val === 1 || val === -1)) {
-			state = state.map((val) => (val === 1 ? 0 : val)); // Set all enabled back to 0
-			clearInterval(interval);
-			moving = false;
-			movement = 0;
-		}
-		checkMovement();
-	}
-	onMount(() => {
-		mounted = true;
-	});
 	onDestroy(() => {
 		if (interval) clearInterval(interval);
 	});
@@ -48,8 +34,15 @@
 		state[i] = newValue;
 		state = state;
 	}
-	$: bottomText = artist + (showAlbum ? ` — ${album}` : '');
-	$: state, mounted && checkReset();
+
+	// Reset on song change
+	metadata.subscribe(reset);
+	// Reset when one finishes AND none are moving.
+	$: {
+		if (!state.includes(0) && state.includes(1)) {
+			reset();
+		}
+	}
 </script>
 
 <div class="pl-7 w-[472px]">
@@ -60,9 +53,13 @@
 		bind:movement
 		on:updateState={({ detail: newValue }) => updateState(0, newValue)}
 	/>
-	<Marquee
-		text={bottomText}
-		bind:movement
-		on:updateState={({ detail: newValue }) => updateState(1, newValue)}
-	/>
+	{#if bottomText}
+		<Marquee
+			text={bottomText}
+			bind:movement
+			on:updateState={({ detail: newValue }) => updateState(1, newValue)}
+		/>
+	{:else}
+		<div class="h-7" />
+	{/if}
 </div>
