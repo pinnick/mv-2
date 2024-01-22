@@ -21,7 +21,6 @@
 
 	const calcHeights = () => {
 		if (!analyser) return;
-		Math.random() < 0.01 && console.log('RAN.');
 		analyser.getByteFrequencyData(dataArray);
 		heights = [];
 		for (let i = 0; i < barCount; i++) {
@@ -72,7 +71,6 @@
 
 	$: if ($mediaElement) {
 		if ($mediaElement.src !== fileSrc) {
-			console.log('reinitialization.');
 			fileSrc = $mediaElement.src;
 			if (source) source.disconnect();
 
@@ -82,7 +80,6 @@
 		}
 	}
 	onDestroy(() => {
-		console.log('destruction.');
 		if (source) {
 			source.disconnect();
 		}
