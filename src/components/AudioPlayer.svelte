@@ -42,23 +42,18 @@
 		$mediaElement = new Audio(url);
 
 		$mediaElement.oncanplay = async () => {
+			$mediaElement?.play();
+			$mediaElement = $mediaElement;
 			ready = true;
 			if (queue[i + 1]) nextURL = URL.createObjectURL(queue[i + 1]);
 		};
 
 		$mediaElement.onended = async () => {
-			$mediaElement = $mediaElement;
 			if (queue[i + 1]) {
 				await loadSong(i + 1, nextURL);
-				toggle(); // play song immediately once loaded
 			}
+			$mediaElement = $mediaElement;
 		};
-	}
-	function toggle() {
-		if ($mediaElement) {
-			if ($mediaElement.paused) $mediaElement.play();
-			else $mediaElement.pause();
-		}
 	}
 </script>
 
