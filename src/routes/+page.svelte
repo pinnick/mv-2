@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { metadata } from '$lib/store';
-	import { invMel } from '../util';
+	import { invMel } from '$lib/util';
 	import { mediaElement } from '$lib/store';
-	import AudioPlayer from '../components/AudioPlayer.svelte';
-	import Visualizer from '../components/Visualizer.svelte';
-	import Details from '../components/Details/Details.svelte';
-	import Background from '../components/Background.svelte';
-	import Buttons from '../components/Buttons.svelte';
-	import Progress from '../components/Progress.svelte';
-	import Sound from '../components/Sound.svelte';
-	import Cover from '../components/Cover.svelte';
+	import AudioPlayer from '$lib/components/AudioPlayer.svelte';
+	import Visualizer from '$lib/components/Visualizer.svelte';
+	import Details from '$lib/components/TitleArtist/TitleArtist.svelte';
+	import Background from '$lib/components/Background.svelte';
+	import Buttons from '$lib/components/ui/Playback/Buttons.svelte';
+	import Progress from '$lib/components/ui/Playback/Progress.svelte';
+	import Sound from '$lib/components/ui/Playback/Sound.svelte';
+	import Cover from '$lib/components/Cover.svelte';
 	// TODO: centralize the audio state.
 
 	// let max = 35;
@@ -64,11 +64,11 @@
 <svelte:window bind:innerWidth />
 <div class="w-full h-screen flex overflow-hidden select-none">
 	<!-- Left bar -->
-	<div class="w-[630px] flex items-center justify-center px-20 flex-col gap-6 overflow-hidden my-6">
+	<div class="w-[630px] flex items-center justify-center flex-col gap-6 overflow-hidden my-6">
 		<div class="rounded-lg my-7 w-full h-[480px] flex items-center justify-center">
 			<Cover />
 		</div>
-		<div class="w-[600px] flex justify-center items-center">
+		<div class="w-full flex justify-center items-center">
 			<Details />
 			<!-- More button -->
 			<AudioPlayer />

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import Button from './ui/Button.svelte';
+	import Button from '../Button.svelte';
 	import { mediaElement } from '$lib/store';
 	let playing = false;
 	const dispatch = createEventDispatcher();

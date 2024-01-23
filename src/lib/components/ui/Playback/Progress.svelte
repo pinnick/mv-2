@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Bar from './Bar.svelte';
+	import Bar from '../../Bar.svelte';
 	import { onDestroy, onMount } from 'svelte';
-	import { formatTime } from '../util';
+	import { formatTime } from '../../../util';
 	import { mediaElement } from '$lib/store';
 	// Progress of the song, in seconds
 	let progress = 0;
@@ -52,7 +52,7 @@
 		if (!interval)
 			interval = setInterval(() => {
 				if (!mouseDown && $mediaElement) progress = $mediaElement.currentTime;
-			}, 20);
+			}, 100);
 	});
 	function handleMouseDown(e: MouseEvent) {
 		if ($mediaElement) {

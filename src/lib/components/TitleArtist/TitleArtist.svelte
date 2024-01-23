@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Marquee from './Marquee.svelte';
 	import { metadata, mediaElement } from '$lib/store';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 
 	$: title = $metadata?.title || ($mediaElement ? 'Unnamed track' : 'Not Playing');
 	$: album = $metadata?.album || '';

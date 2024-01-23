@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { findDynamicScalingExponent, scaleExponentially, stepper, sumTopXInRange } from '../util';
+	import {
+		findDynamicScalingExponent,
+		scaleExponentially,
+		stepper,
+		sumTopXInRange
+	} from '$lib/util';
 	import { mediaElement } from '$lib/store';
 	export let upperBounds: number[];
 	export let sumTotal: number;
