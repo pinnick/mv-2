@@ -38,7 +38,7 @@
 
 <div class="flex overflow-hidden w-full">
 	<div
-		class="marquee {bold ? 'top' : 'bottom'} text-2xl whitespace-nowrap"
+		class="marquee text-2xl whitespace-nowrap {bold ? 'top' : 'bottom'}"
 		bind:clientWidth={containerWidth}
 	>
 		<div
