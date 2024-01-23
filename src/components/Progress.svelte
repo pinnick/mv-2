@@ -102,7 +102,9 @@
 	<div class="w-full" bind:clientWidth={barWidth}>
 		<Bar to={duration} current={progress} on:mousedown={handleMouseDown} active={!!$mediaElement} />
 	</div>
-	<div class="flex justify-between text-white/50 font-semibold text-[13px] cursor-default tracking-wider">
+	<div
+		class="flex justify-between text-white/50 font-semibold text-[14px] cursor-default tracking-wider"
+	>
 		<p>{progressString}</p>
 		<p>
 			{remainingString}
