@@ -44,7 +44,6 @@
 		}
 		// If left click isn't down right now
 		if (e.buttons !== 1) {
-			console.log('?');
 			document.removeEventListener('mousemove', handleMouseMove);
 		}
 	}

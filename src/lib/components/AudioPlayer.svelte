@@ -5,7 +5,6 @@
 	import { artistsArrayToString, bufferToDataURL } from '../util';
 	import { mediaElement } from '$lib/store';
 
-	let ready = false;
 	let queue: File[] = [];
 	function handleFileUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
@@ -44,7 +43,6 @@
 		$mediaElement.oncanplay = async () => {
 			$mediaElement?.play();
 			$mediaElement = $mediaElement;
-			ready = true;
 			if (queue[i + 1]) nextURL = URL.createObjectURL(queue[i + 1]);
 		};
 

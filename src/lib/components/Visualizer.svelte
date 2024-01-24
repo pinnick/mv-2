@@ -14,7 +14,6 @@
 	let analyser: AnalyserNode;
 	let bufferLength: number | undefined;
 	let dataArray: Uint8Array;
-	let animationId: number;
 	let source: MediaElementAudioSourceNode;
 	let fileSrc: string;
 	// Each dot's height ranges from [0, 320]
@@ -23,7 +22,6 @@
 	$: barCount = upperBounds.length - 1;
 	let heights: number[] = new Array(barCount).fill(0);
 	const refreshRate = 144;
-
 	const calcHeights = () => {
 		if (!analyser) return;
 		analyser.getByteFrequencyData(dataArray);
@@ -54,27 +52,21 @@
 		// requestAnimationFrame(calcHeights);
 	};
 
-	let audioContextCreated = false;
 	$: if (visible) {
 		if (!analyser) {
-			audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+			audioContext = new AudioContext();
 			analyser = audioContext.createAnalyser();
 			analyser.fftSize = 1024 * 4;
-
-			audioContextCreated = true;
 
 			bufferLength = analyser.frequencyBinCount;
 			dataArray = new Uint8Array(bufferLength);
 		}
-		if (animationId) {
-			cancelAnimationFrame(animationId);
-		}
-		// animationId = requestAnimationFrame(calcHeights);
 		clearInterval(interval);
 		interval = setInterval(calcHeights, 1000 / refreshRate);
 	}
 
 	$: if ($mediaElement) {
+		console.log($mediaElement?.volume);
 		if ($mediaElement.src !== fileSrc) {
 			fileSrc = $mediaElement.src;
 			if (source) source.disconnect();
