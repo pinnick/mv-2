@@ -55,7 +55,7 @@
 		if (!analyser) {
 			audioContext = new AudioContext();
 			analyser = audioContext.createAnalyser();
-			analyser.fftSize = 1024 * 4;
+			analyser.fftSize = 1024 * 16;
 
 			bufferLength = analyser.frequencyBinCount;
 			dataArray = new Uint8Array(bufferLength);
