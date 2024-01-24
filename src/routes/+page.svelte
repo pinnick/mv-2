@@ -48,7 +48,7 @@
 		if ($mediaElement) {
 			if ($mediaElement.paused) {
 				if ($mediaElement.ended) $mediaElement.currentTime = 0;
-				// hack to remove setInterval bug. we will use rust for calculations soon.
+				// Hack to remove setInterval bug
 				else $mediaElement.currentTime = Math.floor($mediaElement.currentTime * 100) / 100;
 				$mediaElement.play();
 				$mediaElement = $mediaElement;

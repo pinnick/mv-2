@@ -66,7 +66,6 @@
 	}
 
 	$: if ($mediaElement) {
-		console.log($mediaElement?.volume);
 		if ($mediaElement.src !== fileSrc) {
 			fileSrc = $mediaElement.src;
 			if (source) source.disconnect();
