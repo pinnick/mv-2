@@ -49,7 +49,6 @@
 
 			heights.push(scaledBin);
 		}
-		// requestAnimationFrame(calcHeights);
 	};
 
 	$: if (visible) {
