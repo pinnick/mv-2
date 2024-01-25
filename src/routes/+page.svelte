@@ -53,8 +53,11 @@
 		const currentTrack = value.tracks[value.current];
 		if (!currentTrack) return;
 		metadata.set(currentTrack.metadata || null);
-
-		$mediaElement = new Audio(currentTrack.url);
+		// If there's only one in queue and it's the same song as before
+		if ($mediaElement && value.tracks.length === 1 && $mediaElement.src === currentTrack.url) {
+			$mediaElement.currentTime = 0;
+			$playing = false;
+		} else $mediaElement = new Audio(currentTrack.url);
 	});
 	// Bind mediaElement to playing
 	playing.subscribe((newPlaying) => {
@@ -67,11 +70,9 @@
 	});
 	mediaElement.subscribe((media) => {
 		if (!media) return;
-		media.oncanplay = () => {
-			// if ($queue.current > 0) {
+		media.onloadeddata = () => {
 			$playing = true;
 			$mediaElement?.play();
-			// }
 		};
 
 		media.onended = () => {

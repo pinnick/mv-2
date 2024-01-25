@@ -13,7 +13,6 @@
 		if (nextTrackExists) $queue.current += 1;
 		else {
 			$queue.current = 0;
-			$playing = false;
 		}
 	};
 </script>
