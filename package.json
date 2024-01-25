@@ -38,6 +38,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@tauri-apps/api": "^1.5.3",
 		"music-metadata-browser": "^2.5.10"
 	}
 }
