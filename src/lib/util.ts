@@ -141,7 +141,7 @@ export const spring = (t: number) => {
 	return Math.pow(Math.E, -6 * t ** 2) * Math.cos(7.5 * t * t - Math.PI) + 1;
 };
 
-export const shuffle = (array: FileList): FileList => {
+export const shuffle = <T>(array: T[]): T[] => {
 	let currentIndex = array.length;
 	let randomIndex: number;
 

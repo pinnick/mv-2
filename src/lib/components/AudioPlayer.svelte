@@ -10,8 +10,10 @@
 	function handleFileUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
 		if (target.files) {
-			if (shouldShuffle) target.files = shuffle(target.files);
-			for (const file of target.files) {
+			// convert to File[]
+			let files = [...target.files];
+			if (shouldShuffle) files = shuffle(files);
+			for (const file of files) {
 				queue.push(URL.createObjectURL(file));
 			}
 			loadSong(0);
