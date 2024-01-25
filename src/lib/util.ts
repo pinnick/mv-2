@@ -1,3 +1,5 @@
+import { fetchFromUrl } from 'music-metadata-browser';
+
 export const invMel = (m: number): number => 700 * (Math.exp(m / 1127) - 1);
 export const rapScale = (x: number): number => (x <= 83 ? (1000 / 35) * x : Math.pow(1.099, x));
 export function fillRoundRect(
@@ -153,4 +155,28 @@ export const shuffle = <T>(array: T[]): T[] => {
 	}
 
 	return array;
+};
+
+export const getMetadata = async (url: string): Promise<App.Metadata> => {
+	let metadata: App.Metadata;
+	const newMetadata = await fetchFromUrl(url);
+	let cover: string = '';
+	if (newMetadata?.common?.picture) {
+		if (newMetadata.common.picture[0]) {
+			cover = bufferToDataURL(
+				newMetadata.common.picture[0].data,
+				newMetadata.common.picture[0].type || ''
+			);
+		}
+	}
+
+	metadata = {
+		title: newMetadata.common.title || '',
+		artist: artistsArrayToString(newMetadata.common.artist?.split(', ') || []),
+		album: newMetadata.common.album || '',
+		explicit: false,
+		cover: cover
+	};
+
+	return metadata;
 };

@@ -1,16 +1,9 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import Button from '../Button.svelte';
-	import { mediaElement } from '$lib/store';
-	let playing = false;
+	import { mediaElement, playing } from '$lib/store';
 	const dispatch = createEventDispatcher();
-	$: {
-		if ($mediaElement && !$mediaElement.paused) {
-			playing = true;
-		} else {
-			playing = false;
-		}
-	}
+
 	const updatePlay = () => {
 		dispatch('toggle');
 	};
@@ -26,7 +19,7 @@
 			/></g
 		>
 	</Button>
-	{#if playing}
+	{#if $playing}
 		<Button label="Pause" on:click={updatePlay}>
 			<path
 				fill="currentColor"

@@ -68,7 +68,7 @@
 	}
 
 	$: if ($mediaElement) {
-		console.log(analyser);
+		// console.log(analyser);
 		if ($mediaElement.src !== fileSrc) {
 			fileSrc = $mediaElement.src;
 			source?.disconnect();

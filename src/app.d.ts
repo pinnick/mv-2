@@ -2,10 +2,6 @@
 // for information about these interfaces
 declare global {
 	namespace App {
-		// interface Error {}
-		// interface Locals {}
-		// interface PageData {}
-		// interface Platform {}
 		interface Metadata {
 			title: string;
 			artist: string;
@@ -22,7 +18,17 @@ declare global {
 			linearPercentage: number;
 			bassAttenuationFactor: number;
 		}
+
 		type MovementState = -1 | 0 | 1;
+
+		interface Queue {
+			current: number;
+			tracks: Track[];
+		}
+		interface Track {
+			url: string;
+			metadata?: Metadata;
+		}
 	}
 }
 

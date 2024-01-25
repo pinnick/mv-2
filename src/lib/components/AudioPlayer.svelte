@@ -1,61 +1,58 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import { metadata } from '$lib/store';
-	import { fetchFromUrl } from 'music-metadata-browser';
-	import { artistsArrayToString, bufferToDataURL, shuffle } from '../util';
-	import { mediaElement } from '$lib/store';
+	import { playing } from '$lib/store';
+	import { artistsArrayToString, bufferToDataURL, getMetadata, shuffle } from '../util';
+	import { mediaElement, queue } from '$lib/store';
 
-	let queue: string[] = [];
 	let shouldShuffle = false;
-	function handleFileUpload(e: Event) {
+	async function handleFileUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
 		if (target.files) {
 			// convert to File[]
 			let files = [...target.files];
 			if (shouldShuffle) files = shuffle(files);
-			for (const file of files) {
-				queue.push(URL.createObjectURL(file));
+
+			const newQueue: App.Queue = { current: 0, tracks: [] };
+
+			for (let i = 0; i < files.length; i++) {
+				const track: App.Track = { url: URL.createObjectURL(files[i]) };
+				if (i < 5) track.metadata = await getMetadata(track.url);
+				newQueue.tracks.push(track);
 			}
-			loadSong(0);
+			$queue = newQueue;
+			playNext();
 		}
 	}
 
-	async function loadSong(i: number) {
-		const url = queue[i];
-		const newMetadata = await fetchFromUrl(url);
-		let cover: string = '';
-		if (newMetadata?.common?.picture) {
-			if (newMetadata.common.picture[0]) {
-				cover = bufferToDataURL(
-					newMetadata.common.picture[0].data,
-					newMetadata.common.picture[0].type || ''
-				);
+	const playNext = async () => {
+		if ($queue.tracks.length > 0) {
+			const url = $queue.tracks[$queue.current].url;
+
+			if ($mediaElement) URL.revokeObjectURL($mediaElement.src);
+			$mediaElement = new Audio(url);
+
+			$mediaElement.oncanplay = async () => {
+				$mediaElement?.play();
+				$playing = true;
+				$mediaElement = $mediaElement;
+			};
+
+			$mediaElement.onended = async () => {
+				$mediaElement = $mediaElement;
+				if ($queue.tracks[$queue.current + 1]) {
+					$queue.current += 1;
+					playNext();
+				} else $playing = false;
+			};
+
+			// Ensure next 5 tracks have metadata loaded
+			for (let i = $queue.current; i < $queue.current + 5; i++) {
+				if ($queue.tracks[i] && !$queue.tracks[i].metadata) {
+					$queue.tracks[i].metadata = await getMetadata($queue.tracks[i].url);
+				}
 			}
 		}
-
-		metadata.set({
-			title: newMetadata.common.title || '',
-			artist: artistsArrayToString(newMetadata.common.artist?.split(', ') || []),
-			album: newMetadata.common.album || '',
-			explicit: false,
-			cover: cover
-		});
-
-		if ($mediaElement) URL.revokeObjectURL($mediaElement.src);
-		$mediaElement = new Audio(url);
-
-		$mediaElement.oncanplay = async () => {
-			$mediaElement?.play();
-			$mediaElement = $mediaElement;
-		};
-
-		$mediaElement.onended = async () => {
-			$mediaElement = $mediaElement;
-			if (queue[i + 1]) {
-				await loadSong(i + 1);
-			}
-		};
-	}
+	};
 </script>
 
 <div class="flex-none mr-16 w-8 ml-5">

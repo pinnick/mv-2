@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { metadata } from '$lib/store';
 	import { invMel } from '$lib/util';
-	import { mediaElement } from '$lib/store';
+	import { mediaElement, playing } from '$lib/store';
 	import AudioPlayer from '$lib/components/AudioPlayer.svelte';
 	import Visualizer from '$lib/components/Visualizer.svelte';
 	import Details from '$lib/components/TitleArtist/TitleArtist.svelte';
@@ -52,9 +51,11 @@
 				else $mediaElement.currentTime = Math.floor($mediaElement.currentTime * 100) / 100;
 				$mediaElement.play();
 				$mediaElement = $mediaElement;
+				$playing = true;
 			} else {
 				$mediaElement.pause();
 				$mediaElement = $mediaElement;
+				$playing = false;
 			}
 		}
 	}

@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { tweened } from 'svelte/motion';
-	import { mediaElement, metadata } from '$lib/store';
+	import { playing, metadata } from '$lib/store';
 	import { cubicInOut } from 'svelte/easing';
 	import { spring } from '../util';
-
-	$: playing = $mediaElement && !$mediaElement.paused;
 
 	const size = tweened<number>(undefined);
 
@@ -18,7 +16,7 @@
 		});
 	};
 
-	$: playing ? handleEnlarge() : handleShrink();
+	$: $playing ? handleEnlarge() : handleShrink();
 </script>
 
 <div class="w-auto aspect-square h-full" style="transform: scale({$size})">
@@ -26,7 +24,7 @@
 		<img
 			src={$metadata.cover}
 			alt=""
-			class="w-auto h-full rounded-xl border border-neutral-800/60 ease-in-cover {playing}"
+			class="w-auto h-full rounded-xl border border-neutral-800/60 ease-in-cover {$playing}"
 		/>
 	{:else}
 		<div class="w-full aspect-square flex items-center justify-center">
