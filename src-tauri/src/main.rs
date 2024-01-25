@@ -8,6 +8,6 @@ fn main() {
     .expect("error while running tauri application");
 }
 #[tauri::command]
-fn my_custom_command(name: &str) {
-  println!("I was invoked from JS! hello, {}.", name);
+async fn my_custom_command() {
+  
 }
