@@ -13,3 +13,4 @@ vite.config.ts.timestamp-*
 # Added by cargo
 
 /analyzer/target
+/src-tauri/music/*
