@@ -1,58 +1,29 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import { playing } from '$lib/store';
-	import { artistsArrayToString, bufferToDataURL, getMetadata, shuffle } from '../util';
-	import { mediaElement, queue } from '$lib/store';
+	import { shuffle } from '../util';
+	import { queue } from '$lib/store';
 
 	let shouldShuffle = false;
 	async function handleFileUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
 		if (target.files) {
+			// Revoke previous URLs
+			for (let i = 0; i < $queue.tracks.length; i++) {
+				URL.revokeObjectURL($queue.tracks[i].url);
+			}
 			// convert to File[]
 			let files = [...target.files];
 			if (shouldShuffle) files = shuffle(files);
 
 			const newQueue: App.Queue = { current: 0, tracks: [] };
 
-			for (let i = 0; i < files.length; i++) {
-				const track: App.Track = { url: URL.createObjectURL(files[i]) };
-				if (i < 5) track.metadata = await getMetadata(track.url);
+			for (const file of files) {
+				const track: App.Track = { url: URL.createObjectURL(file) };
 				newQueue.tracks.push(track);
 			}
 			$queue = newQueue;
-			playNext();
 		}
 	}
-
-	const playNext = async () => {
-		if ($queue.tracks.length > 0) {
-			const url = $queue.tracks[$queue.current].url;
-
-			if ($mediaElement) URL.revokeObjectURL($mediaElement.src);
-			$mediaElement = new Audio(url);
-
-			$mediaElement.oncanplay = async () => {
-				$mediaElement?.play();
-				$playing = true;
-				$mediaElement = $mediaElement;
-			};
-
-			$mediaElement.onended = async () => {
-				$mediaElement = $mediaElement;
-				if ($queue.tracks[$queue.current + 1]) {
-					$queue.current += 1;
-					playNext();
-				} else $playing = false;
-			};
-
-			// Ensure next 5 tracks have metadata loaded
-			for (let i = $queue.current; i < $queue.current + 5; i++) {
-				if ($queue.tracks[i] && !$queue.tracks[i].metadata) {
-					$queue.tracks[i].metadata = await getMetadata($queue.tracks[i].url);
-				}
-			}
-		}
-	};
 </script>
 
 <div class="flex-none mr-16 w-8 ml-5">

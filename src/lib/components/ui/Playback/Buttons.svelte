@@ -1,16 +1,25 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import Button from '../Button.svelte';
-	import { mediaElement, playing } from '$lib/store';
-	const dispatch = createEventDispatcher();
+	import { playing, queue } from '$lib/store';
 
 	const updatePlay = () => {
-		dispatch('toggle');
+		$playing = !$playing;
+	};
+	const rewind = () => {
+		if ($queue.current > 0) $queue.current -= 1;
+	};
+	const skip = () => {
+		const nextTrackExists = $queue.tracks[$queue.current + 1];
+		if (nextTrackExists) $queue.current += 1;
+		else {
+			$queue.current = 0;
+			$playing = false;
+		}
 	};
 </script>
 
 <div class="w-full flex items-center justify-evenly py-14">
-	<Button label="Rewind" viewbox="0 0 16 16">
+	<Button label="Rewind" viewbox="0 0 16 16" on:click={rewind}>
 		<g fill="currentColor"
 			><path
 				d="M8.404 7.304a.802.802 0 0 0 0 1.392l6.363 3.692c.52.302 1.233-.043 1.233-.696V4.308c0-.653-.713-.998-1.233-.696L8.404 7.304Z"
@@ -34,7 +43,7 @@
 			/></Button
 		>
 	{/if}
-	<Button label="Fast Forward" viewbox="0 0 16 16">
+	<Button label="Fast Forward" viewbox="0 0 16 16" on:click={skip}>
 		<g fill="currentColor"
 			><path
 				d="M7.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692Z"

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { invMel } from '$lib/util';
-	import { mediaElement, playing } from '$lib/store';
+	import { getMetadata, invMel } from '$lib/util';
+	import { mediaElement, playing, queue, metadata } from '$lib/store';
 	import AudioPlayer from '$lib/components/AudioPlayer.svelte';
 	import Visualizer from '$lib/components/Visualizer.svelte';
 	import Details from '$lib/components/TitleArtist/TitleArtist.svelte';
@@ -9,7 +9,6 @@
 	import Progress from '$lib/components/ui/Playback/Progress.svelte';
 	import Sound from '$lib/components/ui/Playback/Sound.svelte';
 	import Cover from '$lib/components/Cover.svelte';
-	// TODO: centralize the audio state.
 
 	// let max = 35;
 	// let lower = 3.3;
@@ -43,22 +42,44 @@
 		upperBounds = newBounds;
 	};
 
-	function toggle() {
-		if ($mediaElement) {
-			if ($mediaElement.paused) {
-				if ($mediaElement.ended) $mediaElement.currentTime = 0;
-				// Hack to remove setInterval bug
-				else $mediaElement.currentTime = Math.floor($mediaElement.currentTime * 100) / 100;
-				$mediaElement.play();
-				$mediaElement = $mediaElement;
-				$playing = true;
-			} else {
-				$mediaElement.pause();
-				$mediaElement = $mediaElement;
-				$playing = false;
+	queue.subscribe(async (value) => {
+		// Ensure next 10 tracks have metadata loaded
+		for (let i = value.current; i < value.current + 10; i++) {
+			if (value.tracks[i] && !value.tracks[i].metadata) {
+				value.tracks[i].metadata = await getMetadata(value.tracks[i].url);
 			}
 		}
-	}
+
+		const currentTrack = value.tracks[value.current];
+		if (!currentTrack) return;
+		metadata.set(currentTrack.metadata || null);
+
+		$mediaElement = new Audio(currentTrack.url);
+	});
+	// Bind mediaElement to playing
+	playing.subscribe((newPlaying) => {
+		mediaElement.update((media) => {
+			if (!media) return null;
+			if (newPlaying) media.play();
+			else media.pause();
+			return media;
+		});
+	});
+	mediaElement.subscribe((media) => {
+		if (!media) return;
+		media.oncanplay = () => {
+			// if ($queue.current > 0) {
+			$playing = true;
+			$mediaElement?.play();
+			// }
+		};
+
+		media.onended = () => {
+			if ($queue.tracks[$queue.current + 1]) {
+				$queue.current += 1;
+			} else $playing = false;
+		};
+	});
 </script>
 
 <Background />
@@ -76,7 +97,7 @@
 		</div>
 		<div class="w-[452px]">
 			<Progress />
-			<Buttons on:toggle={toggle} />
+			<Buttons />
 			<Sound />
 		</div>
 	</div>
