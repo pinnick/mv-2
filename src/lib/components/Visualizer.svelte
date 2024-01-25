@@ -54,8 +54,10 @@
 		if (!analyser) {
 			audioContext = new AudioContext();
 			analyser = audioContext.createAnalyser();
-			analyser.fftSize = 1024 * 32;
-
+			// Scale the fftSize with the sample rate
+			const power = Math.round(Math.log2(analyser.context.sampleRate / 24000));
+			analyser.fftSize = 1024 * 2 ** Math.max(power, 2);
+			analyser.smoothingTimeConstant = 0.85;
 			bufferLength = analyser.frequencyBinCount;
 			dataArray = new Uint8Array(bufferLength);
 		}
@@ -66,9 +68,10 @@
 	}
 
 	$: if ($mediaElement) {
+		console.log(analyser);
 		if ($mediaElement.src !== fileSrc) {
 			fileSrc = $mediaElement.src;
-			if (source) source.disconnect();
+			source?.disconnect();
 
 			source = audioContext.createMediaElementSource($mediaElement);
 			source.connect(analyser);
@@ -76,8 +79,8 @@
 		}
 	}
 	onDestroy(() => {
-		source?.disconnect();
-		audioContext?.close();
+		source.disconnect();
+		audioContext.close();
 	});
 </script>
 

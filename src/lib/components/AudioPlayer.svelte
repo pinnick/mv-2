@@ -4,8 +4,7 @@
 	import { fetchFromUrl } from 'music-metadata-browser';
 	import { artistsArrayToString, bufferToDataURL } from '../util';
 	import { mediaElement } from '$lib/store';
-	import { invoke } from '@tauri-apps/api/tauri';
-	invoke('my_custom_command', { name: 'mv-2' });
+
 	let queue: File[] = [];
 	function handleFileUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
