@@ -2,21 +2,24 @@
 	import { fade } from 'svelte/transition';
 	import { metadata } from '$lib/store';
 	import { fetchFromUrl } from 'music-metadata-browser';
-	import { artistsArrayToString, bufferToDataURL } from '../util';
+	import { artistsArrayToString, bufferToDataURL, shuffle } from '../util';
 	import { mediaElement } from '$lib/store';
 
-	let queue: File[] = [];
+	let queue: string[] = [];
+	let shouldShuffle = false;
 	function handleFileUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
 		if (target.files) {
-			queue = [...target.files];
-			const url = URL.createObjectURL(queue[0]);
-
-			loadSong(0, url);
+			if (shouldShuffle) target.files = shuffle(target.files);
+			for (const file of target.files) {
+				queue.push(URL.createObjectURL(file));
+			}
+			loadSong(0);
 		}
 	}
 
-	async function loadSong(i: number, url: string) {
+	async function loadSong(i: number) {
+		const url = queue[i];
 		const newMetadata = await fetchFromUrl(url);
 		let cover: string = '';
 		if (newMetadata?.common?.picture) {
@@ -35,7 +38,6 @@
 			explicit: false,
 			cover: cover
 		});
-		let nextURL: string;
 
 		if ($mediaElement) URL.revokeObjectURL($mediaElement.src);
 		$mediaElement = new Audio(url);
@@ -43,13 +45,12 @@
 		$mediaElement.oncanplay = async () => {
 			$mediaElement?.play();
 			$mediaElement = $mediaElement;
-			if (queue[i + 1]) nextURL = URL.createObjectURL(queue[i + 1]);
 		};
 
 		$mediaElement.onended = async () => {
 			$mediaElement = $mediaElement;
 			if (queue[i + 1]) {
-				await loadSong(i + 1, nextURL);
+				await loadSong(i + 1);
 			}
 		};
 	}
