@@ -16,12 +16,10 @@
 	let dataArray: Uint8Array;
 	let source: MediaElementAudioSourceNode;
 	let fileSrc: string;
-	// Each dot's height ranges from [0, 320]
-	let interval: NodeJS.Timeout;
+	let animationId: number;
 	$: visible = !!$mediaElement;
 	$: barCount = upperBounds.length - 1;
 	let heights: number[] = new Array(barCount).fill(0);
-	const refreshRate = 144;
 	const calcHeights = () => {
 		if (!analyser) return;
 		analyser.getByteFrequencyData(dataArray);
@@ -49,19 +47,22 @@
 
 			heights.push(scaledBin);
 		}
+		requestAnimationFrame(calcHeights);
 	};
 
 	$: if (visible) {
 		if (!analyser) {
 			audioContext = new AudioContext();
 			analyser = audioContext.createAnalyser();
-			analyser.fftSize = 1024 * 16;
+			analyser.fftSize = 1024 * 32;
 
 			bufferLength = analyser.frequencyBinCount;
 			dataArray = new Uint8Array(bufferLength);
 		}
-		clearInterval(interval);
-		interval = setInterval(calcHeights, 1000 / refreshRate);
+		if (animationId) {
+			cancelAnimationFrame(animationId);
+		}
+		animationId = requestAnimationFrame(calcHeights);
 	}
 
 	$: if ($mediaElement) {
@@ -75,14 +76,8 @@
 		}
 	}
 	onDestroy(() => {
-		if (source) {
-			source.disconnect();
-		}
-		if (audioContext) {
-			audioContext.close();
-		}
-		visible = false;
-		visible = true;
+		source?.disconnect();
+		audioContext?.close();
 	});
 </script>
 
@@ -90,7 +85,6 @@
 	<div
 		class="w-full max-w-7xl h-[500px] flex items-center justify-center gap-[2px]"
 		transition:fade|global
-		style="--duration: {1 / refreshRate}s"
 	>
 		{#each heights as dot, i (i)}
 			<div
@@ -100,6 +94,3 @@
 		{/each}
 	</div>
 {/if}
-
-<style>
-</style>
