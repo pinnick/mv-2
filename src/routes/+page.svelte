@@ -3,7 +3,7 @@
 	import { mediaElement, playing, queue, metadata } from '$lib/store';
 	import AudioPlayer from '$lib/components/AudioPlayer.svelte';
 	import Visualizer from '$lib/components/Visualizer.svelte';
-	import Details from '$lib/components/TitleArtist/TitleArtist.svelte';
+	import TitleArtist from '$lib/components/TitleArtist/TitleArtist.svelte';
 	import Background from '$lib/components/Background.svelte';
 	import Buttons from '$lib/components/ui/Playback/Buttons.svelte';
 	import Progress from '$lib/components/ui/Playback/Progress.svelte';
@@ -15,11 +15,10 @@
 	// let upper = 6;
 	// let stepDivisor = 1000;
 	let innerWidth: number;
+	let innerHeight: number;
 	let split = 75;
 	let maxMel = 2850;
-	$: if (innerWidth < 1050) {
-		split = 15;
-	} else if (innerWidth < 1200) {
+	$: if (innerWidth < 1200) {
 		split = 30;
 	} else if (innerWidth < 1350) {
 		split = 45;
@@ -84,15 +83,15 @@
 </script>
 
 <Background />
-<svelte:window bind:innerWidth />
+<svelte:window bind:innerWidth bind:innerHeight />
 <div class="w-full h-screen flex overflow-hidden select-none">
 	<!-- Left bar -->
-	<div class="w-[630px] flex items-center justify-center flex-col gap-6 overflow-hidden my-6">
+	<div class="w-[630px] flex items-center justify-center flex-col gap-6 overflow-hidden mx-auto">
 		<div class="rounded-lg my-7 w-full h-[480px] flex items-center justify-center">
 			<Cover />
 		</div>
 		<div class="w-full flex justify-center items-center">
-			<Details />
+			<TitleArtist />
 			<!-- More button -->
 			<AudioPlayer />
 		</div>
@@ -103,8 +102,12 @@
 		</div>
 	</div>
 	<!-- Lyrics & Vis -->
-	<div class="h-full flex flex-col justify-center items-center font-bold flex-1 text-white">
+	<div
+		class="h-full flex flex-col justify-center items-center font-bold flex-1 text-white {innerWidth >
+		1050
+			? 'block'
+			: 'hidden'}"
+	>
 		<Visualizer bind:upperBounds sumTotal={1} />
 	</div>
-	<div class="absolute top-0 left-0" />
 </div>
