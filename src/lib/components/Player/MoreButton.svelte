@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import { shuffle } from '../util';
-	import { queue } from '$lib/store';
+	import { shuffle } from '../../util';
+	import { playing, queue } from '$lib/store';
+	import { PlayState } from '$lib/types';
 
 	let shouldShuffle = false;
 	async function handleFileUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
 		if (target.files) {
+			// Ensure playback is ready
+			$playing = PlayState.Ready;
 			// Revoke previous URLs
 			for (let i = 0; i < $queue.tracks.length; i++) {
 				URL.revokeObjectURL($queue.tracks[i].url);

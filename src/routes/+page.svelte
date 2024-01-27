@@ -1,14 +1,16 @@
 <script lang="ts">
+	import { PlayState } from '$lib/types';
+	import { onMount } from 'svelte';
 	import { getMetadata, invMel } from '$lib/util';
 	import { mediaElement, playing, queue, metadata } from '$lib/store';
-	import AudioPlayer from '$lib/components/AudioPlayer.svelte';
+	import MoreButton from '$lib/components/Player/MoreButton.svelte';
 	import Visualizer from '$lib/components/Visualizer.svelte';
-	import TitleArtist from '$lib/components/TitleArtist/TitleArtist.svelte';
+	import TitleArtist from '$lib/components/Player/TitleArtist/TitleArtist.svelte';
 	import Background from '$lib/components/Background.svelte';
-	import Buttons from '$lib/components/ui/Playback/Buttons.svelte';
-	import Progress from '$lib/components/ui/Playback/Progress.svelte';
-	import Sound from '$lib/components/ui/Playback/Sound.svelte';
-	import Cover from '$lib/components/Cover.svelte';
+	import PlaybackButtons from '$lib/components/Player/PlaybackButtons/PlaybackButtons.svelte';
+	import Progress from '$lib/components/Player/Progress.svelte';
+	import Sound from '$lib/components/Player/Sound.svelte';
+	import Cover from '$lib/components/Player/Cover.svelte';
 
 	// let max = 35;
 	// let lower = 3.3;
@@ -41,44 +43,54 @@
 		upperBounds = newBounds;
 	};
 
-	queue.subscribe(async (value) => {
-		// Ensure next 10 tracks have metadata loaded
-		for (let i = value.current; i < value.current + 10; i++) {
-			if (value.tracks[i] && !value.tracks[i].metadata) {
-				value.tracks[i].metadata = await getMetadata(value.tracks[i].url);
+	onMount(() => {
+		queue.subscribe(async (value) => {
+			if (value.current >= value.tracks.length && value.tracks.length > 0) {
+				// Playback has finished.
+				$queue.current = 0;
+				$playing = PlayState.Stopped;
+				// Not quite sure why this has to be here, but it doesn't work without it.
+				$mediaElement?.pause();
+				return;
 			}
-		}
 
-		const currentTrack = value.tracks[value.current];
-		if (!currentTrack) return;
-		metadata.set(currentTrack.metadata || null);
-		// If there's only one in queue and it's the same song as before
-		if ($mediaElement && value.tracks.length === 1 && $mediaElement.src === currentTrack.url) {
-			$mediaElement.currentTime = 0;
-			$playing = false;
-		} else $mediaElement = new Audio(currentTrack.url);
-	});
-	// Bind mediaElement to playing
-	playing.subscribe((newPlaying) => {
-		mediaElement.update((media) => {
-			if (!media) return null;
-			if (newPlaying) media.play();
-			else media.pause();
-			return media;
+			// Ensure next 2 tracks have metadata loaded
+			for (let i = value.current; i < value.current + 2; i++) {
+				if (value.tracks[i] && !value.tracks[i].metadata) {
+					value.tracks[i].metadata = await getMetadata(value.tracks[i].url);
+				}
+			}
+
+			// Update metadata
+			const currentTrack = value.tracks[value.current];
+			if (!currentTrack) return;
+			metadata.set(currentTrack.metadata || null);
+
+			$mediaElement = new Audio(currentTrack.url);
 		});
-	});
-	mediaElement.subscribe((media) => {
-		if (!media) return;
-		media.onloadeddata = () => {
-			$playing = true;
-			$mediaElement?.play();
-		};
+		// Bind mediaElement to playing
+		playing.subscribe((newPlaying) => {
+			if (!$mediaElement) return null;
 
-		media.onended = () => {
-			if ($queue.tracks[$queue.current + 1]) {
-				$queue.current += 1;
-			} else $playing = false;
-		};
+			if (newPlaying === PlayState.Playing) $mediaElement.play();
+			else $mediaElement.pause();
+		});
+		mediaElement.subscribe((media) => {
+			if (!media) return;
+			media.onloadeddata = () => {
+				// If the player is paused, don't autoplay the loaded song.
+				if ($playing === PlayState.Stopped) return;
+
+				$playing = PlayState.Playing;
+				$mediaElement?.play();
+			};
+
+			media.onended = () => {
+				if ($queue.tracks[$queue.current + 1]) {
+					$queue.current += 1;
+				} else $playing = PlayState.Stopped;
+			};
+		});
 	});
 </script>
 
@@ -92,12 +104,11 @@
 		</div>
 		<div class="w-full flex justify-center items-center">
 			<TitleArtist />
-			<!-- More button -->
-			<AudioPlayer />
+			<MoreButton />
 		</div>
 		<div class="w-[452px]">
 			<Progress />
-			<Buttons />
+			<PlaybackButtons />
 			<Sound />
 		</div>
 	</div>

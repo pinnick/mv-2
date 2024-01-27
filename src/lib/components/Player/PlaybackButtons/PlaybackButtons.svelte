@@ -1,19 +1,17 @@
 <script lang="ts">
-	import Button from '../Button.svelte';
+	import Button from './PlaybackButton.svelte';
+	import { PlayState } from '$lib/types';
 	import { playing, queue } from '$lib/store';
 
 	const updatePlay = () => {
-		$playing = !$playing;
+		if ($playing === PlayState.Playing) $playing = PlayState.Stopped;
+		else $playing = PlayState.Playing;
 	};
 	const rewind = () => {
 		if ($queue.current > 0) $queue.current -= 1;
 	};
 	const skip = () => {
-		const nextTrackExists = $queue.tracks[$queue.current + 1];
-		if (nextTrackExists) $queue.current += 1;
-		else {
-			$queue.current = 0;
-		}
+		$queue.current += 1;
 	};
 </script>
 
@@ -27,7 +25,7 @@
 			/></g
 		>
 	</Button>
-	{#if $playing}
+	{#if $playing === PlayState.Playing}
 		<Button label="Pause" on:click={updatePlay}>
 			<path
 				fill="currentColor"

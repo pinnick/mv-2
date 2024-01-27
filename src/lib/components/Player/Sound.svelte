@@ -6,7 +6,7 @@
 </script>
 
 <script lang="ts">
-	import Bar from '$lib/components/Bar.svelte';
+	import Bar from '$lib/components/ui/Bar.svelte';
 	import { onDestroy } from 'svelte';
 	import { mediaElement } from '$lib/store';
 	let element: HTMLDivElement;

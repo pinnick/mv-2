@@ -1,12 +1,13 @@
 <script lang="ts">
-	import Bar from '../../Bar.svelte';
+	// TODO: Redo this entire component.
+	import Bar from '../ui/Bar.svelte';
 	import { onDestroy, onMount } from 'svelte';
-	import { formatTime } from '../../../util';
+	import { formatTime } from '../../util';
 	import { mediaElement } from '$lib/store';
+
 	// Progress of the song, in seconds
 	let progress = 0;
 	let fileSrc: string;
-	// TODO: Do we need this variable?
 	let duration = 1;
 	let barWidth: number;
 	let fromLeft: number;
