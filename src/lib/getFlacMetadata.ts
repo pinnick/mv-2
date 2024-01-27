@@ -117,9 +117,8 @@ const parsePictureBlock = (dataView: DataView, offset: number): string | null =>
 };
 
 const getString = (dataView: DataView, offset: number, length: number): string => {
-	let out = '';
-	for (let i = offset; i < offset + length; i++) {
-		out += String.fromCharCode(dataView.getUint8(i));
-	}
+	const uint8Array = new Uint8Array(dataView.buffer, offset, length);
+	const decoder = new TextDecoder('utf-8'); // Specify the encoding
+	const out = decoder.decode(uint8Array);
 	return out;
 };
