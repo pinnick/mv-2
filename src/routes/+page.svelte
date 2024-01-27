@@ -49,8 +49,12 @@
 				// Playback has finished.
 				$queue.current = 0;
 				$playing = PlayState.Stopped;
-				// Not quite sure why this has to be here, but it doesn't work without it.
-				$mediaElement?.pause();
+				if ($mediaElement) {
+					// Not quite sure why this has to be here, but it doesn't work without it.
+					$mediaElement.pause();
+
+					$mediaElement.currentTime = 0;
+				}
 				return;
 			}
 
