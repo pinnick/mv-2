@@ -1,3 +1,4 @@
+<!-- This component is used for both volume and progress -->
 <script lang="ts">
 	export let current: number;
 	export let from = 0;
