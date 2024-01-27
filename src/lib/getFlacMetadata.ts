@@ -15,8 +15,8 @@ export const getFlacMetadata = async (
 	}
 
 	let offset = 4; // Start after 'fLaC' marker
-	let tags: Record<string, string> = {}; // Declare tags here
-	let albumCoverUrl: string | null = null; // Declare albumCoverUrl here
+	let tags: Record<string, string> = {};
+	let albumCoverUrl: string | null = null;
 
 	while (offset < dataView.byteLength) {
 		if (offset + 4 > dataView.byteLength) {
@@ -42,7 +42,7 @@ export const getFlacMetadata = async (
 
 		if (blockHeader.isLastBlock) break;
 
-		offset += 4 + blockHeader.blockSize; // Move to next block
+		offset += 4 + blockHeader.blockSize;
 	}
 
 	return { tags, albumCoverUrl };
@@ -64,7 +64,7 @@ const getMetadataBlockHeader = (
 
 const parseVorbisCommentBlock = (dataView: DataView, offset: number): any => {
 	// Read and skip vendor string
-	const vendorLength = dataView.getUint32(offset, true); // Assuming little-endian
+	const vendorLength = dataView.getUint32(offset, true);
 	offset += 4 + vendorLength; // Move past the vendor string
 
 	// Retrieve the number of comment fields in the Vorbis Comment block
@@ -118,7 +118,7 @@ const parsePictureBlock = (dataView: DataView, offset: number): string | null =>
 
 const getString = (dataView: DataView, offset: number, length: number): string => {
 	const uint8Array = new Uint8Array(dataView.buffer, offset, length);
-	const decoder = new TextDecoder('utf-8'); // Specify the encoding
+	const decoder = new TextDecoder('utf-8');
 	const out = decoder.decode(uint8Array);
 	return out;
 };
