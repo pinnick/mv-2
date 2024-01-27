@@ -66,7 +66,8 @@
 			if (!currentTrack) return;
 			metadata.set(currentTrack.metadata || null);
 
-			$mediaElement = new Audio(currentTrack.url);
+			// Don't create a new audio element if the correct song is already loaded
+			if ($mediaElement?.src !== currentTrack.url) $mediaElement = new Audio(currentTrack.url);
 		});
 		// Bind mediaElement to playing
 		playing.subscribe((newPlaying) => {
