@@ -58,10 +58,10 @@
 				return;
 			}
 
-			// Ensure next 2 tracks have metadata loaded
-			for (let i = value.current; i < value.current + 2; i++) {
+			// Ensure next 5 tracks have metadata loaded
+			for (let i = value.current; i < value.current + 5; i++) {
 				if (value.tracks[i] && !value.tracks[i].metadata) {
-					value.tracks[i].metadata = await getMetadata(value.tracks[i].url);
+					value.tracks[i].metadata = await getMetadata(value.tracks[i].file);
 				}
 			}
 

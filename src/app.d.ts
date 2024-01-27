@@ -27,8 +27,26 @@ declare global {
 		}
 		interface Track {
 			url: string;
+			file: File;
 			metadata?: Metadata;
 		}
+
+		type VorbisTagKeys =
+			| 'ALBUM'
+			| 'ALBUMARTIST'
+			| 'ARTIST'
+			| 'COPYRIGHT'
+			| 'DATE'
+			| 'DISCNUMBER'
+			| 'DISCTOTAL'
+			| 'ISRC'
+			| 'TITLE'
+			| 'TRACKNUMBER'
+			| 'TRACKTOTAL'
+			| 'YEAR';
+		type VorbisTags = {
+			[key in VorbisTagKeys]?: string;
+		};
 	}
 }
 

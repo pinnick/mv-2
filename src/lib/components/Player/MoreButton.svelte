@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import { shuffle } from '../../util';
+	import { shuffle } from '$lib/util';
 	import { playing, queue } from '$lib/store';
 	import { PlayState } from '$lib/types';
 
@@ -21,7 +21,7 @@
 			const newQueue: App.Queue = { current: 0, tracks: [] };
 
 			for (const file of files) {
-				const track: App.Track = { url: URL.createObjectURL(file) };
+				const track: App.Track = { url: URL.createObjectURL(file), file };
 				newQueue.tracks.push(track);
 			}
 			$queue = newQueue;

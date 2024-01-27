@@ -1,5 +1,5 @@
 import { fetchFromUrl } from 'music-metadata-browser';
-
+import { getFlacMetadata } from '$lib/getFlacMetadata';
 export const invMel = (m: number): number => 700 * (Math.exp(m / 1127) - 1);
 export const rapScale = (x: number): number => (x <= 83 ? (1000 / 35) * x : Math.pow(1.099, x));
 export function fillRoundRect(
@@ -157,25 +157,16 @@ export const shuffle = <T>(array: T[]): T[] => {
 	return array;
 };
 
-export const getMetadata = async (url: string): Promise<App.Metadata> => {
+export const getMetadata = async (file: File): Promise<App.Metadata> => {
 	let metadata: App.Metadata;
-	const newMetadata = await fetchFromUrl(url);
-	let cover: string = '';
-	if (newMetadata?.common?.picture) {
-		if (newMetadata.common.picture[0]) {
-			cover = bufferToDataURL(
-				newMetadata.common.picture[0].data,
-				newMetadata.common.picture[0].type || ''
-			);
-		}
-	}
-
+	// only works for FLAC files as of now.
+	const newMetadata = await getFlacMetadata(file);
 	metadata = {
-		title: newMetadata.common.title || '',
-		artist: artistsArrayToString(newMetadata.common.artist?.split(', ') || []),
-		album: newMetadata.common.album || '',
+		title: newMetadata.tags.TITLE || '',
+		artist: artistsArrayToString(newMetadata.tags.ARTIST?.split(', ') || []),
+		album: newMetadata.tags.ALBUM || '',
 		explicit: false,
-		cover: cover
+		cover: newMetadata.albumCoverUrl
 	};
 
 	return metadata;
