@@ -1,6 +1,5 @@
-// In the ready case, audio will play on the onload() function of mediaElement
 export enum PlayState {
-	Stopped = 'stopped',
-	Playing = 'playing',
-	Ready = 'ready'
+	Stopped = 'stopped', // User has paused
+	Playing = 'playing', // User has begun playback
+	Ready = 'ready' // User just imported files and player is waiting to play the first track in queue
 }
