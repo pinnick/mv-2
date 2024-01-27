@@ -17,7 +17,7 @@
 	let remainingString = '––:––';
 
 	function updateStrings() {
-		if ($mediaElement) {
+		if ($mediaElement?.duration) {
 			const flooredProgress = Math.floor(progress);
 			const roundedRemaining = Math.floor(Math.ceil($mediaElement.duration) - progress);
 			progressString = formatTime(flooredProgress);
