@@ -7,7 +7,7 @@
 	let shouldShuffle = false;
 	async function handleFileUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
-		if (target.files) {
+		if (target.files && target.files.length > 0) {
 			// Ensure playback is ready
 			$playing = PlayState.Ready;
 			// Revoke previous URLs
