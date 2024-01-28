@@ -127,7 +127,10 @@ export const artistsArrayToString = (
 	title: string,
 	commaExceptions: string[]
 ): string => {
-	title = title.toLowerCase();
+	// Tracks may have the same title as their artist. In this case, the artist would be completelely empty since it is
+	// removed by the title check. This only removes artists after "feat" has been declared.
+	const splitByFeat = title.toLowerCase().split('feat');
+	let titleFeat = splitByFeat.length > 1 ? splitByFeat[splitByFeat.length - 1] : '';
 
 	// Some artists like to have commas in their names. This deals with common ones.
 	for (let i = 0; i < commaExceptions.length; i++) {
@@ -135,14 +138,14 @@ export const artistsArrayToString = (
 		const re = new RegExp(exceptionArtist, 'ig');
 
 		artistsStr = artistsStr.replace(re, `EXCEPTION${i}`);
-		title = title.replace(re, `EXCEPTION${i}`);
+		titleFeat = titleFeat.replace(re, `EXCEPTION${i}`);
 	}
 
 	let artists: string[] = artistsStr.split(', ');
 	let str = '';
 
-	// Rid artists that are already in the title (ex: feat. ARTIST)
-	artists = artists.filter((e) => !title.toLowerCase().includes(e.toLowerCase()));
+	// Title check: Rid artists that are already in the title (ex: feat. ARTIST)
+	artists = artists.filter((e) => !titleFeat.toLowerCase().includes(e.toLowerCase()));
 
 	artists.forEach((a, i) => {
 		// Place exceptions back in place for the artist
