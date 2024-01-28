@@ -122,10 +122,36 @@ export const bufferToDataURL = (buffer: ArrayBuffer, imageType: string): string 
 	let base64String = window.btoa(binary);
 	return `data:${imageType};base64,` + base64String;
 };
-export const artistsArrayToString = (artists: string[], title: string): string => {
+export const artistsArrayToString = (
+	artistsStr: string,
+	title: string,
+	commaExceptions: string[]
+): string => {
+	title = title.toLowerCase();
+
+	// Some artists like to have commas in their names. This deals with common ones.
+	for (let i = 0; i < commaExceptions.length; i++) {
+		const exceptionArtist = commaExceptions[i];
+		const re = new RegExp(exceptionArtist, 'ig');
+
+		artistsStr = artistsStr.replace(re, `EXCEPTION${i}`);
+		title = title.replace(re, `EXCEPTION${i}`);
+	}
+
+	let artists: string[] = artistsStr.split(', ');
 	let str = '';
+
+	// Rid artists that are already in the title (ex: feat. ARTIST)
 	artists = artists.filter((e) => !title.toLowerCase().includes(e.toLowerCase()));
+
 	artists.forEach((a, i) => {
+		// Place exceptions back in place for the artist
+		if (a.includes('EXCEPTION')) {
+			// Index is the last character
+			const index = parseInt(a[a.length - 1]);
+			a = commaExceptions[index];
+		}
+
 		switch (i) {
 			case 0:
 				str += `${a}`;
@@ -160,14 +186,21 @@ export const shuffle = <T>(array: T[]): T[] => {
 };
 
 export const getMetadata = async (file: File): Promise<App.Metadata> => {
+	const commaExceptions = [
+		'Tyler, The Creator',
+		'Earth, Wind & Fire',
+		'Crosby, Stills & Nash',
+		'Emerson, Lake & Palmer'
+	];
 	let metadata: App.Metadata;
 	// only works for FLAC files as of now.
 	const newMetadata = await getFlacMetadata(file);
 	metadata = {
 		title: newMetadata.tags.TITLE || '',
 		artist: artistsArrayToString(
-			newMetadata.tags.ARTIST?.split(', ') || [],
-			newMetadata.tags.TITLE || ''
+			newMetadata.tags.ARTIST || '',
+			newMetadata.tags.TITLE || '',
+			commaExceptions
 		),
 		album: newMetadata.tags.ALBUM || '',
 		explicit: false,
