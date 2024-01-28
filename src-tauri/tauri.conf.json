@@ -56,10 +56,10 @@
 		"windows": [
 			{
 				"fullscreen": false,
-				"height": 600,
+				"height": 980,
 				"resizable": true,
 				"title": "Music Visualizer",
-				"width": 800
+				"width": 1500
 			}
 		]
 	}
