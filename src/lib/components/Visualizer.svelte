@@ -86,7 +86,7 @@
 
 {#if visible}
 	<div
-		class="w-full max-w-7xl h-[500px] flex items-center justify-center gap-[2px]"
+		class="w-full max-w-7xl h-[500px] flex items-center justify-center gap-[2px] mr-12"
 		transition:fade|global
 	>
 		{#each heights as dot, i (i)}
