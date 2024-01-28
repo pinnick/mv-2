@@ -122,9 +122,10 @@ export const bufferToDataURL = (buffer: ArrayBuffer, imageType: string): string 
 	let base64String = window.btoa(binary);
 	return `data:${imageType};base64,` + base64String;
 };
-export const artistsArrayToString = (artists: string[]): string => {
+export const artistsArrayToString = (artists: string[], title: string): string => {
 	let str = '';
-	artists.map((a, i) => {
+	artists = artists.filter((e) => !title.toLowerCase().includes(e.toLowerCase()));
+	artists.forEach((a, i) => {
 		switch (i) {
 			case 0:
 				str += `${a}`;
@@ -137,6 +138,7 @@ export const artistsArrayToString = (artists: string[]): string => {
 				break;
 		}
 	});
+
 	return str;
 };
 export const spring = (t: number) => {
@@ -163,7 +165,10 @@ export const getMetadata = async (file: File): Promise<App.Metadata> => {
 	const newMetadata = await getFlacMetadata(file);
 	metadata = {
 		title: newMetadata.tags.TITLE || '',
-		artist: artistsArrayToString(newMetadata.tags.ARTIST?.split(', ') || []),
+		artist: artistsArrayToString(
+			newMetadata.tags.ARTIST?.split(', ') || [],
+			newMetadata.tags.TITLE || ''
+		),
 		album: newMetadata.tags.ALBUM || '',
 		explicit: false,
 		cover: newMetadata.albumCoverUrl
