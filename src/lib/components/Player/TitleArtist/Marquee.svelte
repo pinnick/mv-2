@@ -36,7 +36,7 @@
 	});
 </script>
 
-<div class="flex overflow-hidden w-full">
+<div class="flex overflow-hidden w-[402px]">
 	<div
 		class="marquee text-2xl whitespace-nowrap {bold ? 'top' : 'bottom'}"
 		bind:clientWidth={containerWidth}
@@ -48,13 +48,13 @@
 			{#if bold}
 				<button
 					on:click={() => (explicit = !explicit)}
-					class="mr-10 ml-10 flex items-center"
+					class="mr-10 ml-6 flex items-center"
 					bind:clientWidth={textWidth}
 				>
 					<Text {text} {explicit} />
 				</button>
 			{:else}
-				<span class="mr-10 ml-10 flex items-center" bind:clientWidth={textWidth}>
+				<span class="mr-10 ml-6 flex items-center" bind:clientWidth={textWidth}>
 					<Text {text} {explicit} /></span
 				>
 			{/if}
@@ -69,7 +69,6 @@
 	.marquee {
 		color: white;
 		width: 100%;
-		max-width: 444px;
 		mask-size: 100% 100%;
 		mask-repeat: no-repeat;
 		mask-position: left;
@@ -79,8 +78,8 @@
 		mask-image: linear-gradient(
 			to right,
 			transparent,
-			rgba(0, 0, 0, 1) 10%,
-			rgba(0, 0, 0, 1) 95%,
+			rgba(0, 0, 0, 1) 6%,
+			rgba(0, 0, 0, 1) 92%,
 			transparent
 		);
 	}
@@ -90,8 +89,8 @@
 		mask-image: linear-gradient(
 			to right,
 			transparent,
-			rgba(0, 0, 0, 0.7) 10%,
-			rgba(0, 0, 0, 0.7) 95%,
+			rgba(0, 0, 0, 0.7) 6%,
+			rgba(0, 0, 0, 0.7) 92%,
 			transparent
 		);
 	}

@@ -52,7 +52,7 @@
 	});
 </script>
 
-<div class="w-full text-white/50 flex gap-3 items-center h-9" bind:this={element}>
+<div class="w-full text-white/50 flex gap-3 items-center h-9 mb-4" bind:this={element}>
 	<svg width="13" class="mx-[7px]" height="19" viewBox="0 0 13 19">
 		<path fill="currentColor" fill-opacity=".85" d={speakerFill} />
 	</svg>

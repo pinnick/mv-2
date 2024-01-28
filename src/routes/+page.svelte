@@ -103,15 +103,18 @@
 <svelte:window bind:innerWidth bind:innerHeight />
 <div class="w-full h-screen flex overflow-hidden select-none">
 	<!-- Left bar -->
-	<div class="w-[630px] flex items-center justify-center flex-col gap-6 overflow-hidden mx-auto">
-		<div class="rounded-lg my-7 w-full h-[480px] flex items-center justify-center">
-			<Cover />
-		</div>
-		<div class="w-full flex justify-center items-center">
+	<div
+		class="w-[420px] flex items-center justify-center flex-col gap-4 flex-shrink-0 {innerWidth >
+		1050
+			? 'ml-20'
+			: 'mx-auto'}"
+	>
+		<Cover />
+		<div class="flex justify-center items-center px-2.5 w-full">
 			<TitleArtist />
 			<MoreButton />
 		</div>
-		<div class="w-[452px]">
+		<div class="w-full">
 			<Progress />
 			<PlaybackButtons />
 			<Sound />

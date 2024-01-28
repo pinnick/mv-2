@@ -45,7 +45,7 @@
 	}
 </script>
 
-<div class="pl-7 w-[472px]">
+<div class="w-full -ml-4">
 	<Marquee
 		text={title}
 		{explicit}

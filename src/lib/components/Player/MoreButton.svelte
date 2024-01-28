@@ -29,7 +29,7 @@
 	}
 </script>
 
-<div class="flex-none mr-16 w-8 ml-5">
+<div class="flex-none w-8 ml-2">
 	<!-- Three dots button -->
 	<label
 		for="file-upload"
