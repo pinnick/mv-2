@@ -2,7 +2,7 @@
 	import { tweened } from 'svelte/motion';
 	import { playing, metadata } from '$lib/store';
 	import { cubicInOut } from 'svelte/easing';
-	import { spring } from '../../util';
+	import { spring } from '$lib/utils/util';
 	import { PlayState } from '$lib/types';
 
 	const size = tweened<number>(undefined);

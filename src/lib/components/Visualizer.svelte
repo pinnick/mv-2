@@ -6,7 +6,7 @@
 		scaleExponentially,
 		stepper,
 		sumTopXInRange
-	} from '$lib/util';
+	} from '$lib/utils/util';
 	import { mediaElement } from '$lib/store';
 	export let upperBounds: number[];
 	export let sumTotal: number;

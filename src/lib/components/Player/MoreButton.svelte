@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import { shuffle } from '$lib/util';
+	import { shuffle } from '$lib/utils/util';
 	import { playing, queue } from '$lib/store';
 	import { PlayState } from '$lib/types';
 

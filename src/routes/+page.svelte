@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PlayState } from '$lib/types';
 	import { onMount } from 'svelte';
-	import { getMetadata, invMel } from '$lib/util';
+	import { getMetadata, invMel } from '$lib/utils/util';
 	import { mediaElement, playing, queue, metadata } from '$lib/store';
 	import MoreButton from '$lib/components/Player/MoreButton.svelte';
 	import Visualizer from '$lib/components/Visualizer.svelte';

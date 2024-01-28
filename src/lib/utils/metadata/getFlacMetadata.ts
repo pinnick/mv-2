@@ -3,6 +3,7 @@
  * @param file The FLAC file.
  * @returns The tags and album cover. Album cover may be null.
  */
+import { getString } from '$lib/utils/util';
 export const getFlacMetadata = async (
 	file: File
 ): Promise<{ tags: App.VorbisTags; albumCoverUrl: string | null }> => {
@@ -114,11 +115,4 @@ const parsePictureBlock = (dataView: DataView, offset: number): string | null =>
 	const blob = new Blob([buffer], { type: mimeType });
 	const picture = URL.createObjectURL(blob);
 	return picture;
-};
-
-const getString = (dataView: DataView, offset: number, length: number): string => {
-	const uint8Array = new Uint8Array(dataView.buffer, offset, length);
-	const decoder = new TextDecoder('utf-8');
-	const out = decoder.decode(uint8Array);
-	return out;
 };

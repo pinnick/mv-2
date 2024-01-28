@@ -1,5 +1,5 @@
 import { fetchFromUrl } from 'music-metadata-browser';
-import { getFlacMetadata } from '$lib/getFlacMetadata';
+import { getFlacMetadata } from '$lib/utils/metadata/getFlacMetadata';
 export const invMel = (m: number): number => 700 * (Math.exp(m / 1127) - 1);
 export const rapScale = (x: number): number => (x <= 83 ? (1000 / 35) * x : Math.pow(1.099, x));
 export function fillRoundRect(
@@ -211,4 +211,11 @@ export const getMetadata = async (file: File): Promise<App.Metadata> => {
 	};
 
 	return metadata;
+};
+
+export const getString = (dataView: DataView, offset: number, length: number): string => {
+	const uint8Array = new Uint8Array(dataView.buffer, offset, length);
+	const decoder = new TextDecoder('utf-8');
+	const out = decoder.decode(uint8Array);
+	return out;
 };

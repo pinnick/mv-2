@@ -2,7 +2,7 @@
 	// TODO: Redo this entire component.
 	import Bar from '../ui/Bar.svelte';
 	import { onDestroy, onMount } from 'svelte';
-	import { formatTime } from '../../util';
+	import { formatTime } from '$lib/utils/util';
 	import { mediaElement } from '$lib/store';
 
 	// Progress of the song, in seconds
