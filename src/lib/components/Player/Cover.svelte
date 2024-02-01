@@ -26,7 +26,7 @@
 			<img
 				src={$metadata.cover}
 				alt=""
-				class="w-auto h-full rounded-xl border border-neutral-800/60 ease-in-cover transition-shadow duration-500 {$playing ===
+				class="w-auto h-full rounded-xl ease-in-cover transition-shadow duration-500 {$playing ===
 				PlayState.Playing
 					? 'shadow-2xl'
 					: 'shadow-lg'}"
