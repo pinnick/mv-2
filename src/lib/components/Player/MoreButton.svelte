@@ -8,8 +8,7 @@
 	async function handleFileUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
 		if (target.files && target.files.length > 0) {
-			// Ensure playback is ready
-			$playing = PlayState.Ready;
+			if ($playing === PlayState.Stopped) $playing = PlayState.Ready;
 			// Revoke previous URLs
 			for (let i = 0; i < $queue.tracks.length; i++) {
 				URL.revokeObjectURL($queue.tracks[i].url);
@@ -29,7 +28,7 @@
 	}
 </script>
 
-<div class="flex-none w-8 ml-2">
+<div class="flex-none w-8 ml-auto">
 	<!-- Three dots button -->
 	<label
 		for="file-upload"

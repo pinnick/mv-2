@@ -7,7 +7,7 @@
 		stepper,
 		sumTopXInRange
 	} from '$lib/utils/util';
-	import { mediaElement } from '$lib/store';
+	import { mediaElement, metadata } from '$lib/store';
 	export let upperBounds: number[];
 	export let sumTotal: number;
 	let audioContext: AudioContext;
@@ -91,8 +91,12 @@
 	>
 		{#each heights as dot, i (i)}
 			<div
-				class="{dot < 10 ? 'bg-white/70' : 'bg-white'} w-[9px] min-h-[8px] rounded-full dot"
-				style="height: {Math.max(dot * 1.3, 10)}px"
+				class="{dot < 10 ? '!opacity-[0.7]' : ''} w-[9px] min-h-[8px] rounded-full dot"
+				style="height: {Math.max(
+					dot * 1.3,
+					10
+				)}px; background-color: color-mix(in srgb, {$metadata?.color ||
+					'#ffffff'} 15%, #ffffff); opacity: {Math.min(Math.max(dot / 70, 0.75), 1)}"
 			/>
 		{/each}
 	</div>

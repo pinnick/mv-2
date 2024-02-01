@@ -1,52 +1,31 @@
 <script lang="ts">
-	import Marquee from './Marquee.svelte';
+	import Marquee from './Marquee2.svelte';
 	import { metadata, mediaElement } from '$lib/store';
-	import { onDestroy } from 'svelte';
 
 	$: title = $metadata?.title || ($mediaElement ? 'Unnamed track' : 'Not Playing');
 	$: album = $metadata?.album || '';
 	$: artist = $metadata?.artist || '';
 	$: explicit = !!$metadata?.explicit;
 	$: bottomText = artist + (showAlbum && album ? ` — ${album}` : '');
-
+	$: console.log($metadata?.color);
 	let showAlbum = false;
-	let movement = 0;
-	let interval: NodeJS.Timeout;
-	let state: App.MovementState[] = [-1, -1]; // -1: Too small to move, 0: Actively moving, 1: Finished moving
-	let begunMoving: number;
-	// If all elements of an array are equal to 1, ignoring the ones that are equal to -1, set all values that are equal to 1 back to 0.
-	function beginMovement() {
-		begunMoving = Date.now();
-		interval = setInterval(() => {
-			if (Date.now() - begunMoving >= 3000) movement -= 1;
-		}, 28);
-	}
-	function reset() {
-		state = state.map((val) => (val === 1 ? 0 : val)); // Set all enabled back to 0
-		clearInterval(interval);
-		movement = 0;
-		beginMovement();
-	}
-	onDestroy(() => {
-		if (interval) clearInterval(interval);
-	});
-	function updateState(i: number, newValue: App.MovementState) {
-		state[i] = newValue;
-		state = state;
-	}
-
-	// Reset on song change
-	metadata.subscribe(reset);
-	// Reset when one finishes AND none are moving.
-	$: {
-		if (!state.includes(0) && state.includes(1)) {
-			reset();
-		}
-	}
 </script>
 
-<div class="w-full -ml-4">
-	<Marquee
+<div class="w-full text-[22px] flex-1 min-w-0">
+	<div class="font-semibold -mb-1.5 pr-1 text-white">
+		<Marquee>{title}</Marquee>
+	</div>
+	{#if bottomText.length > 0}
+		<div
+			class="text-[22px]"
+			style="color: color-mix(in srgb, {$metadata?.color || '#ffffff'}, #ffffff)"
+		>
+			<Marquee opacity={0.8}>{artist}</Marquee>
+		</div>
+	{:else}
+		<div class="h-8" />
+	{/if}
+	<!-- <Marquee
 		text={title}
 		{explicit}
 		bold
@@ -61,5 +40,5 @@
 		/>
 	{:else}
 		<div class="h-7" />
-	{/if}
+	{/if} -->
 </div>

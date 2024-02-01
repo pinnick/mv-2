@@ -26,14 +26,14 @@
 		>
 	</Button>
 	{#if $playing === PlayState.Playing}
-		<Button label="Pause" on:click={updatePlay}>
+		<Button label="Pause" on:click={updatePlay} size={56}>
 			<path
 				fill="currentColor"
 				d="M216 48v160a16 16 0 0 1-16 16h-40a16 16 0 0 1-16-16V48a16 16 0 0 1 16-16h40a16 16 0 0 1 16 16ZM96 32H56a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h40a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16Z"
 			/></Button
 		>
 	{:else}
-		<Button label="Play" on:click={updatePlay}
+		<Button label="Play" on:click={updatePlay} size={56}
 			><path
 				fill="currentColor"
 				d="M240 128a15.74 15.74 0 0 1-7.6 13.51L88.32 229.65a16 16 0 0 1-16.2.3A15.86 15.86 0 0 1 64 216.13V39.87a15.86 15.86 0 0 1 8.12-13.82a16 16 0 0 1 16.2.3l144.08 88.14A15.74 15.74 0 0 1 240 128Z"

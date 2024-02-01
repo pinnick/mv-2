@@ -52,14 +52,14 @@
 	});
 </script>
 
-<div class="w-full text-white/50 flex gap-3 items-center h-9 mb-4" bind:this={element}>
-	<svg width="13" class="mx-[7px]" height="19" viewBox="0 0 13 19">
+<div class="w-full text-neutral-300/50 flex gap-4 items-center h-9 mb-4" bind:this={element}>
+	<svg width="13" height="19" class="ml-[10px] mt-[2px]" viewBox="0 0 13 19">
 		<path fill="currentColor" fill-opacity=".85" d={speakerFill} />
 	</svg>
 	<div class="w-full" bind:clientWidth={barWidth}>
 		<Bar to={1} current={sound} on:mousedown={handleMouseDown} />
 	</div>
-	<svg width="27" height="20" viewBox="0 0 27 20">
+	<svg width="27" height="20" viewBox="0 0 27 20" class="mr-[10px]">
 		<path fill="currentColor" fill-opacity=".85" d={speakerWave3} />
 	</svg>
 </div>

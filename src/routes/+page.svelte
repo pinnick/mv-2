@@ -93,7 +93,7 @@
 			media.onended = () => {
 				if ($queue.tracks[$queue.current + 1]) {
 					$queue.current += 1;
-				} else $playing = PlayState.Stopped;
+				} else $playing = PlayState.Ready;
 			};
 		});
 	});
@@ -104,17 +104,16 @@
 <div class="w-full h-screen flex overflow-hidden select-none">
 	<!-- Left bar -->
 	<div
-		class="w-[420px] flex items-center justify-center flex-col gap-4 flex-shrink-0 {innerWidth >
-		1050
-			? 'ml-20'
-			: 'mx-auto'}"
+		class=" flex items-center justify-center flex-col gap-4 flex-shrink-0 {innerWidth > 1050
+			? 'w-[472px] px-7 ml-20'
+			: 'w-[416px] mx-auto'}"
 	>
 		<Cover />
-		<div class="flex justify-center items-center px-2.5 w-full">
+		<div class="pr-2 pl-2.5 flex justify-center items-center w-full max-w-full">
 			<TitleArtist />
 			<MoreButton />
 		</div>
-		<div class="w-full">
+		<div class="w-full px-3">
 			<Progress />
 			<PlaybackButtons />
 			<Sound />
