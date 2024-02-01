@@ -7,7 +7,7 @@
 >
 	{#if $metadata?.cover}
 		<img
-			class="w-screen h-full transform blur-[128px] scale-125 opacity-[.4] animate-slow-spin overflow-hidden"
+			class="w-screen h-full transform blur-[128px] scale-125 opacity-[.55] animate-slow-spin overflow-hidden"
 			src={$metadata.cover}
 			alt=""
 		/>
