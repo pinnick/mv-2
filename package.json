@@ -39,6 +39,7 @@
 	"type": "module",
 	"dependencies": {
 		"@tauri-apps/api": "^1.5.3",
+		"fast-average-color": "^9.4.0",
 		"music-metadata-browser": "^2.5.10"
 	}
 }

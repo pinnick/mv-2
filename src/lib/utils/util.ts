@@ -1,4 +1,5 @@
 import { fetchFromUrl } from 'music-metadata-browser';
+import { FastAverageColor } from 'fast-average-color';
 import { getFlacMetadata } from '$lib/utils/metadata/getFlacMetadata';
 export const invMel = (m: number): number => 700 * (Math.exp(m / 1127) - 1);
 export const rapScale = (x: number): number => (x <= 83 ? (1000 / 35) * x : Math.pow(1.099, x));
@@ -189,6 +190,7 @@ export const shuffle = <T>(array: T[]): T[] => {
 };
 
 export const getMetadata = async (file: File): Promise<App.Metadata> => {
+	const t0 = performance.now();
 	const commaExceptions = [
 		'Tyler, The Creator',
 		'Earth, Wind & Fire',
@@ -198,6 +200,23 @@ export const getMetadata = async (file: File): Promise<App.Metadata> => {
 	let metadata: App.Metadata;
 	// only works for FLAC files as of now.
 	const newMetadata = await getFlacMetadata(file);
+
+	const fac = new FastAverageColor();
+	let color = '#ffffff';
+	// Fetch dominant color
+	if (newMetadata.albumCoverUrl) {
+		await fac
+			.getColorAsync(newMetadata.albumCoverUrl)
+			.then((albumCoverColor) => {
+				color = albumCoverColor.hex;
+				console.log(color);
+				const t1 = performance.now();
+				console.log(t1 - t0);
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+	}
 	metadata = {
 		title: newMetadata.tags.TITLE || '',
 		artist: artistsArrayToString(
@@ -207,7 +226,8 @@ export const getMetadata = async (file: File): Promise<App.Metadata> => {
 		),
 		album: newMetadata.tags.ALBUM || '',
 		explicit: false,
-		cover: newMetadata.albumCoverUrl
+		cover: newMetadata.albumCoverUrl,
+		color
 	};
 
 	return metadata;

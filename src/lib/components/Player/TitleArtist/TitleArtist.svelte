@@ -7,17 +7,20 @@
 	$: artist = $metadata?.artist || '';
 	$: explicit = !!$metadata?.explicit;
 	$: bottomText = artist + (showAlbum && album ? ` — ${album}` : '');
-
+	$: console.log($metadata?.color);
 	let showAlbum = false;
 </script>
 
 <div class="w-full text-[22px] flex-1 min-w-0">
-	<div class="font-semibold -mb-1.5 pr-1">
+	<div class="font-semibold -mb-1.5 pr-1 text-white">
 		<Marquee>{title}</Marquee>
 	</div>
 	{#if bottomText.length > 0}
-		<div class="text-[22px]">
-			<Marquee opacity={0.6}>{artist}</Marquee>
+		<div
+			class="text-[22px]"
+			style="color: color-mix(in srgb, {$metadata?.color || '#ffffff'}, #ffffff)"
+		>
+			<Marquee opacity={0.8}>{artist}</Marquee>
 		</div>
 	{:else}
 		<div class="h-8" />

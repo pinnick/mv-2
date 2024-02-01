@@ -11,7 +11,7 @@
 	$: maskRight = overflow ? '92%' : '100%';
 </script>
 
-<div class="w-[110%] -ml-[10%] marquee text-white" bind:clientWidth={parentWidth}>
+<div class="w-[110%] -ml-[10%] marquee" bind:clientWidth={parentWidth}>
 	<p
 		class="whitespace-nowrap w-min max-w-full marquee-text pl-[10%]"
 		style="--opacity: {opacity}; --maskRight: {maskRight}"
