@@ -13,7 +13,7 @@
 
 <div class="w-[110%] -ml-[10%] marquee" bind:clientWidth={parentWidth}>
 	<p
-		class="whitespace-nowrap w-min max-w-full marquee-text pl-[10%]"
+		class="whitespace-nowrap w-min max-w-full marquee-text pl-[10%] flex"
 		style="--opacity: {opacity}; --maskRight: {maskRight}"
 		bind:clientWidth={childWidth}
 	>
