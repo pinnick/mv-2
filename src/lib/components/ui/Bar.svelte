@@ -19,6 +19,6 @@
 	on:mouseup
 >
 	<div class="w-full h-2 bg-white/20 rounded-full overflow-hidden">
-		<div style="width: {width}%" class=" bg-white/50 h-full" />
+		<div style="width: {width}%" class="bg-neutral-300/50 h-full" />
 	</div>
 </div>

@@ -5,7 +5,7 @@
 	export let color = 'white';
 </script>
 
-<button on:click aria-label={label}>
+<button on:click aria-label={label} class="px-5">
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		width={size}

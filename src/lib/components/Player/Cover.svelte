@@ -20,13 +20,16 @@
 	$: $playing === PlayState.Playing ? handleEnlarge() : handleShrink();
 </script>
 
-<div class="rounded-lg my-7 w-full h-[420px] flex items-center justify-center">
+<div class="rounded-lg my-7 w-full h-[416px] flex items-center justify-center">
 	<div class="w-auto aspect-square h-full" style="transform: scale({$size})">
 		{#if $metadata?.cover}
 			<img
 				src={$metadata.cover}
 				alt=""
-				class="w-auto h-full rounded-xl border border-neutral-800/60 ease-in-cover"
+				class="w-auto h-full rounded-xl border border-neutral-800/60 ease-in-cover transition-shadow duration-500 {$playing ===
+				PlayState.Playing
+					? 'shadow-2xl'
+					: 'shadow-lg'}"
 			/>
 		{:else}
 			<div class="w-full aspect-square flex items-center justify-center">
