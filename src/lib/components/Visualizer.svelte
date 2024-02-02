@@ -91,12 +91,12 @@
 	>
 		{#each heights as dot, i (i)}
 			<div
-				class="{dot < 10 ? '!opacity-[0.7]' : ''} w-[9px] min-h-[8px] rounded-full dot"
+				class="w-[9px] min-h-[8px] rounded-full dot"
 				style="height: {Math.max(
 					dot * 1.3,
 					10
-				)}px; background-color: color-mix(in srgb, {$metadata?.color ||
-					'#ffffff'} 15%, #ffffff); opacity: {Math.min(Math.max(dot / 70, 0.75), 1)}"
+				)}px; background-color: color-mix(in srgb, #ffffff  {dot / 2 + 15}%, {$metadata?.color ||
+					'#ffffff'})"
 			/>
 		{/each}
 	</div>
