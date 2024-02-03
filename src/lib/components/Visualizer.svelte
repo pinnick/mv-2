@@ -95,7 +95,7 @@
 				style="height: {Math.max(
 					dot * 1.3,
 					10
-				)}px; background-color: color-mix(in srgb, #ffffff  {dot / 2 + 15}%, {$metadata?.color ||
+				)}px; background-color: color-mix(in srgb, #ffffff  {dot / 2 + 20}%, {$metadata?.color ||
 					'#ffffff'})"
 			/>
 		{/each}
