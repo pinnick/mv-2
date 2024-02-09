@@ -93,7 +93,9 @@
 			media.onended = () => {
 				if ($queue.tracks[$queue.current + 1]) {
 					$queue.current += 1;
-				} else $playing = PlayState.Ready;
+				}
+				// Prevent random playback pauses
+				else if ($queue.tracks[$queue.current].url === media.src) $playing = PlayState.Ready;
 			};
 		});
 	});
