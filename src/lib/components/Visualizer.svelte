@@ -8,6 +8,8 @@
 		sumTopXInRange
 	} from '$lib/utils/util';
 	import { mediaElement, metadata } from '$lib/store';
+	import { detect } from 'detect-browser';
+
 	export let upperBounds: number[];
 	export let sumTotal: number;
 	let audioContext: AudioContext;
@@ -59,7 +61,9 @@
 			// Scale the fftSize with the sample rate
 			const power = Math.round(Math.log2(analyser.context.sampleRate / 24000));
 			analyser.fftSize = 1024 * 2 ** Math.max(power, 2);
-			analyser.smoothingTimeConstant = 0.85;
+			const browser = detect();
+			if (browser?.name === 'firefox') analyser.smoothingTimeConstant = 0.92;
+			else analyser.smoothingTimeConstant = 0.82;
 			bufferLength = analyser.frequencyBinCount;
 			dataArray = new Uint8Array(bufferLength);
 		}
