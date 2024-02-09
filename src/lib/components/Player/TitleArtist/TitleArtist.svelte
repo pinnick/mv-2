@@ -21,12 +21,15 @@
 <div class="w-full text-[22px] flex-1 min-w-0">
 	<div class="font-semibold -mb-1.5 pr-1 text-white">
 		<Marquee
-			><button on:click={toggleExplicit} class="flex items-center justify-center"
-				>{title}
+			><button on:click={toggleExplicit} class="flex items-center justify-center">
+				{title}
 				{#if explicit}
-					<span class="ml-2">
-						<svg width={18} height={18} viewBox="3 3 18 18" class="explicit-icon"
-							><path fill="color-mix(in srgb, {$metadata?.color || '#fff'}, #ccc)" d={path} /></svg
+					<span class="ml-1.5 mt-0.5">
+						<svg width={18} height={18} viewBox="3 3 18 18"
+							><path
+								fill="color-mix(in srgb, {$metadata?.color || '#fff'} 30%, #999)"
+								d={path}
+							/></svg
 						>
 					</span>
 				{/if}
