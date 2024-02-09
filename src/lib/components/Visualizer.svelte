@@ -93,9 +93,9 @@
 			<div
 				class="w-[9px] min-h-[8px] rounded-full dot"
 				style="height: {Math.max(
-					dot * 1.3,
+					dot * 1.15,
 					10
-				)}px; background-color: color-mix(in srgb, #ffffff  {dot / 2 + 20}%, {$metadata?.color ||
+				)}px; background-color: color-mix(in srgb, #ffffff  {dot / 2 + 30}%, {$metadata?.color ||
 					'#ffffff'})"
 			/>
 		{/each}
