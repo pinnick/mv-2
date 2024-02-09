@@ -20,7 +20,9 @@
 	$: visible = !!$mediaElement;
 	$: barCount = upperBounds.length - 1;
 	let heights: number[] = new Array(barCount).fill(0);
+	let bass: number = 0;
 	const calcHeights = () => {
+		bass = 0;
 		if (!analyser) return;
 		analyser.getByteFrequencyData(dataArray);
 		heights = [];
@@ -44,7 +46,7 @@
 			const steppedValue = stepper(topBinAvg, lowerIndex, 2000);
 
 			const scaledBin = scaleExponentially(steppedValue, dynamicScalingExponent);
-
+			if (i < 4) bass += scaledBin / (255 * 3 * 9);
 			heights.push(scaledBin);
 		}
 		requestAnimationFrame(calcHeights);
@@ -101,3 +103,7 @@
 		{/each}
 	</div>
 {/if}
+<div
+	class="w-screen h-screen absolute top-0 left-0 -z-20"
+	style="opacity: {bass}; background-color: {$metadata?.color || '#ffffff'}"
+></div>
