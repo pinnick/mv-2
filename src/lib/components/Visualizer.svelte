@@ -108,6 +108,6 @@
 	</div>
 {/if}
 <div
-	class="w-screen h-screen absolute top-0 left-0 -z-20"
+	class="w-screen h-screen absolute top-0 left-0 -z-20 brightness-75"
 	style="opacity: {bass}; background-color: {$metadata?.color || '#ffffff'}"
 ></div>
