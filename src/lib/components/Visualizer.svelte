@@ -7,8 +7,10 @@
 		stepper,
 		sumTopXInRange
 	} from '$lib/utils/util';
-	import { mediaElement, metadata } from '$lib/store';
+	import { mediaElement, metadata, queue } from '$lib/store';
 	import { detect } from 'detect-browser';
+	import { extractColors } from 'extract-colors';
+	import '$lib/stripe-gradient.js';
 
 	export let upperBounds: number[];
 	export let sumTotal: number;
@@ -82,6 +84,19 @@
 			source = audioContext.createMediaElementSource($mediaElement);
 			source.connect(analyser);
 			analyser.connect(audioContext.destination);
+			const prevSong: App.Track | undefined = $queue.tracks[$queue.current - 1];
+			if (!prevSong || prevSong.metadata?.album !== $metadata?.album)
+				(async () => {
+					const colors = (await extractColors($metadata?.cover || ''))
+						.map((c) => c.hex)
+						.slice(0, 4);
+					console.log(colors);
+					const test = new Gradient({
+						canvas: '#gradient-canvas',
+						colors: colors
+					});
+					test.colors = '';
+				})();
 		}
 	}
 	onDestroy(() => {
@@ -107,7 +122,12 @@
 		{/each}
 	</div>
 {/if}
-<div
+<canvas
+	id="gradient-canvas"
+	data-transition-in
+	class="-z-30 w-screen h-screen absolute top-0 left-0 opacity-25"
+/>
+<!-- <div
 	class="w-screen h-screen absolute top-0 left-0 -z-20 brightness-75"
 	style="opacity: {bass}; background-color: {$metadata?.color || '#ffffff'}"
-></div>
+></div> -->
