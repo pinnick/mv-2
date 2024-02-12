@@ -12,10 +12,6 @@
 	import Sound from '$lib/components/Player/Sound.svelte';
 	import Cover from '$lib/components/Player/Cover.svelte';
 
-	// let max = 35;
-	// let lower = 3.3;
-	// let upper = 6;
-	// let stepDivisor = 1000;
 	let innerWidth: number;
 	let innerHeight: number;
 	let split = 75;
