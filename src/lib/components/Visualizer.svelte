@@ -7,10 +7,11 @@
 		stepper,
 		sumTopXInRange
 	} from '$lib/utils/util';
-	import { mediaElement, metadata, queue } from '$lib/store';
+	import { mediaElement, metadata, queue, playing } from '$lib/store';
 	import { detect } from 'detect-browser';
 	import { extractColors } from 'extract-colors';
 	import '$lib/stripe-gradient.js';
+	import { PlayState } from '$lib/types';
 
 	export let upperBounds: number[];
 	export let sumTotal: number;
@@ -20,11 +21,12 @@
 	let dataArray: Uint8Array;
 	let source: MediaElementAudioSourceNode;
 	let fileSrc: string;
-	let animationId: number;
+	// let animationId: number;
 	$: visible = !!$mediaElement;
 	$: barCount = upperBounds.length - 1;
 	let heights: number[] = new Array(barCount).fill(0);
 	let bass: number = 0;
+	let interval: NodeJS.Timeout | null = null;
 	const calcHeights = () => {
 		bass = 0;
 		if (!analyser) return;
@@ -53,7 +55,7 @@
 			if (i < 4) bass += scaledBin / (255 * 3 * 9);
 			heights.push(scaledBin);
 		}
-		requestAnimationFrame(calcHeights);
+		// requestAnimationFrame(calcHeights);
 	};
 
 	$: if (visible) {
@@ -69,10 +71,16 @@
 			bufferLength = analyser.frequencyBinCount;
 			dataArray = new Uint8Array(bufferLength);
 		}
-		if (animationId) {
-			cancelAnimationFrame(animationId);
-		}
-		animationId = requestAnimationFrame(calcHeights);
+		// if (animationId) {
+		// 	cancelAnimationFrame(animationId);
+		// }
+		// animationId = requestAnimationFrame(calcHeights);
+	}
+	$: if ($playing === PlayState.Playing && !interval) {
+		interval = setInterval(calcHeights, 6);
+	} else if (interval) {
+		clearInterval(interval);
+		interval = null;
 	}
 
 	$: if ($mediaElement) {
