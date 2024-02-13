@@ -79,8 +79,12 @@
 	$: if ($playing === PlayState.Playing && !interval) {
 		interval = setInterval(calcHeights, 6);
 	} else if (interval) {
-		clearInterval(interval);
-		interval = null;
+		setTimeout(() => {
+			if (interval) {
+				clearInterval(interval);
+				interval = null;
+			}
+		}, 500);
 	}
 
 	$: if ($mediaElement) {
