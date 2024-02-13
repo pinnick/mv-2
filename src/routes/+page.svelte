@@ -65,7 +65,7 @@
 			const currentTrack = value.tracks[value.current];
 			if (!currentTrack) return;
 			metadata.set(currentTrack.metadata || null);
-			
+
 			if(currentTrack.metadata)
 				navigator.mediaSession.metadata = new MediaMetadata({
 					title: currentTrack.metadata.title,
@@ -93,11 +93,13 @@
 			};
 
 			media.onended = () => {
-				if ($queue.tracks[$queue.current + 1]) {
-					$queue.current += 1;
-				}
 				// Prevent random playback pauses
-				else if ($queue.tracks[$queue.current].url === media.src) $playing = PlayState.Ready;
+				if($queue.tracks[$queue.current].url === media.src) {
+					if ($queue.tracks[$queue.current + 1]) {
+						$queue.current += 1;
+					}
+					else $playing = PlayState.Ready;
+				}
 			};
 		});
 	});
