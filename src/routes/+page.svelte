@@ -65,6 +65,12 @@
 			const currentTrack = value.tracks[value.current];
 			if (!currentTrack) return;
 			metadata.set(currentTrack.metadata || null);
+			
+			if(currentTrack.metadata)
+				navigator.mediaSession.metadata = new MediaMetadata({
+					title: currentTrack.metadata.title,
+					artist: currentTrack.metadata.artist
+				});
 
 			// Don't create a new audio element if the correct song is already loaded
 			if ($mediaElement?.src !== currentTrack.url) $mediaElement = new Audio(currentTrack.url);
