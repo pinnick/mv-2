@@ -1,4 +1,5 @@
-import { fetchFromUrl } from 'music-metadata-browser';
+// this is still installed
+// import { fetchFromUrl } from 'music-metadata-browser';
 import { FastAverageColor } from 'fast-average-color';
 import { getFlacMetadata } from '$lib/utils/metadata/getFlacMetadata';
 export const invMel = (m: number): number => 700 * (Math.exp(m / 1127) - 1);
@@ -113,14 +114,14 @@ export const stepper = (scaledValue: number, lowerIndex: number, divisor: number
 };
 export const bufferToDataURL = (buffer: ArrayBuffer, imageType: string): string => {
 	let binary = '';
-	let bytes = new Uint8Array(buffer);
-	let len = bytes.byteLength;
+	const bytes = new Uint8Array(buffer);
+	const len = bytes.byteLength;
 
 	for (let i = 0; i < len; i++) {
 		binary += String.fromCharCode(bytes[i]);
 	}
 
-	let base64String = window.btoa(binary);
+	const base64String = window.btoa(binary);
 	return `data:${imageType};base64,` + base64String;
 };
 export const artistsArrayToString = (
@@ -189,7 +190,7 @@ export const shuffle = <T>(array: T[]): T[] => {
 	return array;
 };
 
-export const getMetadata = async (file: File): Promise<App.Metadata> => {
+export const getMetadata = async (arrayBuffer: ArrayBuffer): Promise<App.Metadata> => {
 	const t0 = performance.now();
 	const commaExceptions = [
 		'Tyler, The Creator',
@@ -197,9 +198,8 @@ export const getMetadata = async (file: File): Promise<App.Metadata> => {
 		'Crosby, Stills & Nash',
 		'Emerson, Lake & Palmer'
 	];
-	let metadata: App.Metadata;
 	// only works for FLAC files as of now.
-	const newMetadata = await getFlacMetadata(file);
+	const newMetadata = await getFlacMetadata(arrayBuffer);
 
 	const fac = new FastAverageColor();
 	let color = '#ffffff';
@@ -217,7 +217,7 @@ export const getMetadata = async (file: File): Promise<App.Metadata> => {
 				console.log(e);
 			});
 	}
-	metadata = {
+	const metadata = {
 		title: newMetadata.tags.TITLE || '',
 		artist: artistsArrayToString(
 			newMetadata.tags.ARTIST || '',

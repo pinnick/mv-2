@@ -5,9 +5,8 @@
  */
 import { getString } from '$lib/utils/util';
 export const getFlacMetadata = async (
-	file: File
+	arrayBuffer: ArrayBuffer
 ): Promise<{ tags: App.VorbisTags; albumCoverUrl: string | null }> => {
-	const arrayBuffer = await file.arrayBuffer();
 	const dataView = new DataView(arrayBuffer);
 
 	if (!isFlacFile(dataView)) {
@@ -72,7 +71,7 @@ const parseVorbisCommentBlock = (dataView: DataView, offset: number): any => {
 	const commentListLength = dataView.getUint32(offset, true);
 	offset += 4;
 
-	let tags: Record<string, string> = {};
+	const tags: Record<string, string> = {};
 	for (let i = 0; i < commentListLength; i++) {
 		const commentLength = dataView.getUint32(offset, true);
 		offset += 4;

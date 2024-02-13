@@ -28,7 +28,8 @@ declare global {
 		}
 		interface Track {
 			url: string;
-			file: File;
+			file?: File;
+			arrayBuffer?: ArrayBuffer;
 			metadata?: Metadata;
 		}
 

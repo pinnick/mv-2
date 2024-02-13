@@ -56,8 +56,18 @@
 
 			// Ensure next 5 tracks have metadata loaded
 			for (let i = value.current; i < value.current + 5; i++) {
-				if (value.tracks[i] && !value.tracks[i].metadata) {
-					value.tracks[i].metadata = await getMetadata(value.tracks[i].file);
+				const track = value.tracks[i];
+				if (track && !track.metadata) {
+					let arrayBuffer: ArrayBuffer;
+					if (track.arrayBuffer) {
+						arrayBuffer = track.arrayBuffer;
+					} else {
+						const { file } = track;
+						if (file) {
+							arrayBuffer = await file.arrayBuffer();
+						} else return console.error('Could not load metadata!');
+					}
+					value.tracks[i].metadata = await getMetadata(arrayBuffer);
 				}
 			}
 
@@ -66,7 +76,7 @@
 			if (!currentTrack) return;
 			metadata.set(currentTrack.metadata || null);
 
-			if(currentTrack.metadata)
+			if (currentTrack.metadata)
 				navigator.mediaSession.metadata = new MediaMetadata({
 					title: currentTrack.metadata.title,
 					artist: currentTrack.metadata.artist
@@ -76,8 +86,17 @@
 			if ($mediaElement?.src !== currentTrack.url) $mediaElement = new Audio(currentTrack.url);
 		});
 		// Bind mediaElement to playing
-		playing.subscribe((newPlaying) => {
-			if (!$mediaElement) return null;
+		playing.subscribe(async (newPlaying) => {
+			if (!$mediaElement) {
+				// PLAY DEMO SONG
+				if (newPlaying === PlayState.Playing) {
+					const url = '/demo1.flac';
+					const blob = await fetch(url).then((r) => r.blob());
+					const arrayBuffer = await blob.arrayBuffer();
+					$queue.tracks = [{ url: '/demo1.flac', arrayBuffer }];
+				}
+				return null;
+			}
 
 			if (newPlaying === PlayState.Playing) $mediaElement.play();
 			else $mediaElement.pause();
@@ -94,11 +113,10 @@
 
 			media.onended = () => {
 				// Prevent random playback pauses
-				if($queue.tracks[$queue.current].url === media.src) {
+				if ($queue.tracks[$queue.current].url === media.src) {
 					if ($queue.tracks[$queue.current + 1]) {
 						$queue.current += 1;
-					}
-					else $playing = PlayState.Ready;
+					} else $playing = PlayState.Ready;
 				}
 			};
 		});
