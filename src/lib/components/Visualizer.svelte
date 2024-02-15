@@ -126,10 +126,11 @@
 			<div
 				class="w-[9px] min-h-[8px] rounded-full dot"
 				style="height: {Math.max(
-					dot * 1.15,
+					Math.round(dot * 1.15),
 					10
-				)}px; background-color: color-mix(in srgb, #ffffff  {dot / 2 + 30}%, {$metadata?.color ||
-					'#ffffff'})"
+				)}px; background-color: color-mix(in srgb, #ffffff  {Math.round(
+					dot + 8
+				)}%, {$metadata?.color || '#ffffff'})"
 			/>
 		{/each}
 	</div>
