@@ -8,7 +8,7 @@ declare global {
 			album: string;
 			explicit: booolean;
 			cover: string | null;
-			color: string;
+			colors: string[];
 			video?: string;
 		}
 		interface Properties {

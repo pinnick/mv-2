@@ -1,7 +1,7 @@
 // this is still installed
 // import { fetchFromUrl } from 'music-metadata-browser';
-import { FastAverageColor } from 'fast-average-color';
 import { getFlacMetadata } from '$lib/utils/metadata/getFlacMetadata';
+import { extractColors } from 'extract-colors';
 export const invMel = (m: number): number => 700 * (Math.exp(m / 1127) - 1);
 export const rapScale = (x: number): number => (x <= 83 ? (1000 / 35) * x : Math.pow(1.099, x));
 export function fillRoundRect(
@@ -198,26 +198,19 @@ export const getMetadata = async (arrayBuffer: ArrayBuffer): Promise<App.Metadat
 		'Crosby, Stills & Nash',
 		'Emerson, Lake & Palmer'
 	];
-	// only works for FLAC files as of now.
+	// TODO: only works for FLAC files as of now.
 	const newMetadata = await getFlacMetadata(arrayBuffer);
 
-	const fac = new FastAverageColor();
-	let color = '#ffffff';
-	// Fetch dominant color
-	if (newMetadata.albumCoverUrl) {
-		await fac
-			.getColorAsync(newMetadata.albumCoverUrl)
-			.then((albumCoverColor) => {
-				color = albumCoverColor.hex;
-				console.log(color);
-				const t1 = performance.now();
-				console.log(t1 - t0);
-			})
-			.catch((e) => {
-				console.log(e);
-			});
-	}
-	const metadata = {
+	const colorsData = await extractColors(newMetadata.albumCoverUrl || '');
+	console.log(colorsData);
+
+	const colors = colorsData
+		.filter((e) => e.area > 0.02)
+		.sort((a, b) => b.intensity - a.intensity)
+		.map((c) => c.hex)
+		.slice(0, 4);
+
+	const metadata: App.Metadata = {
 		title: newMetadata.tags.TITLE || '',
 		artist: artistsArrayToString(
 			newMetadata.tags.ARTIST || '',
@@ -227,9 +220,11 @@ export const getMetadata = async (arrayBuffer: ArrayBuffer): Promise<App.Metadat
 		album: newMetadata.tags.ALBUM || '',
 		explicit: false,
 		cover: newMetadata.albumCoverUrl,
-		color
+		colors
 	};
-
+	const t1 = performance.now();
+	const time = t1 - t0;
+	console.log('done in ' + time.toFixed(0) + ' ms');
 	return metadata;
 };
 

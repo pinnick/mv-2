@@ -9,7 +9,6 @@
 	} from '$lib/utils/util';
 	import { mediaElement, metadata, queue, playing } from '$lib/store';
 	import { detect } from 'detect-browser';
-	import { extractColors } from 'extract-colors';
 	import '$lib/stripe-gradient.js';
 	import { PlayState } from '$lib/types';
 
@@ -99,15 +98,10 @@
 			const prevSong: App.Track | undefined = $queue.tracks[$queue.current - 1];
 			if (!prevSong || prevSong.metadata?.album !== $metadata?.album)
 				(async () => {
-					const colors = (await extractColors($metadata?.cover || ''))
-						.map((c) => c.hex)
-						.slice(0, 4);
-					console.log(colors);
-					const test = new Gradient({
+					new Gradient({
 						canvas: '#gradient-canvas',
-						colors: colors
+						colors: $metadata?.colors || ['#ffffff']
 					});
-					test.colors = '';
 				})();
 		}
 	}
@@ -128,9 +122,8 @@
 				style="height: {Math.max(
 					Math.round(dot * 1.15),
 					10
-				)}px; background-color: color-mix(in srgb, #ffffff  {Math.round(
-					dot + 8
-				)}%, {$metadata?.color || '#ffffff'})"
+				)}px; background-color: color-mix(in srgb, #ffffff  {Math.round(dot + 30)}%, {$metadata
+					?.colors[0] || '#ffffff'})"
 			/>
 		{/each}
 	</div>

@@ -27,7 +27,7 @@
 					<span class="ml-1.5 mt-0.5">
 						<svg width={18} height={18} viewBox="3 3 18 18"
 							><path
-								fill="color-mix(in srgb, {$metadata?.color || '#fff'} 30%, #999)"
+								fill="color-mix(in srgb, {$metadata?.colors[0] || '#fff'} 30%, #ccc)"
 								d={path}
 							/></svg
 						>
@@ -37,7 +37,10 @@
 		</Marquee>
 	</div>
 	{#if bottomText.length > 0}
-		<div class="text-[22px]" style="color: color-mix(in srgb, {$metadata?.color || '#fff'}, #fff)">
+		<div
+			class="text-[22px]"
+			style="color: color-mix(in srgb, {$metadata?.colors[0] || '#fff'} 20%, #fff)"
+		>
 			<Marquee opacity={0.8}>{artist}</Marquee>
 		</div>
 	{:else}
