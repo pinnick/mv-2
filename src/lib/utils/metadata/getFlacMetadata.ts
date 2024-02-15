@@ -1,8 +1,3 @@
-/**
- * Get the metadata and picture of a FLAC file.
- * @param file The FLAC file.
- * @returns The tags and album cover. Album cover may be null.
- */
 import { getString } from '$lib/utils/util';
 export const getFlacMetadata = async (
 	arrayBuffer: ArrayBuffer
@@ -62,7 +57,7 @@ const getMetadataBlockHeader = (
 	};
 };
 
-const parseVorbisCommentBlock = (dataView: DataView, offset: number): any => {
+const parseVorbisCommentBlock = (dataView: DataView, offset: number): Record<string, string> => {
 	// Read and skip vendor string
 	const vendorLength = dataView.getUint32(offset, true);
 	offset += 4 + vendorLength; // Move past the vendor string
