@@ -3,37 +3,6 @@
 import { getFlacMetadata } from '$lib/utils/metadata/getFlacMetadata';
 import { extractColors } from 'extract-colors';
 export const invMel = (m: number): number => 700 * (Math.exp(m / 1127) - 1);
-export const rapScale = (x: number): number => (x <= 83 ? (1000 / 35) * x : Math.pow(1.099, x));
-export function fillRoundRect(
-	ctx: CanvasRenderingContext2D,
-	x: number,
-	y: number,
-	width: number,
-	height: number,
-	radius: number
-) {
-	ctx.beginPath();
-	ctx.moveTo(x + radius, y);
-	ctx.lineTo(x + width - radius, y);
-	ctx.arcTo(x + width, y, x + width, y + radius, radius);
-	ctx.lineTo(x + width, y + height - radius);
-	ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
-	ctx.lineTo(x + radius, y + height);
-	ctx.arcTo(x, y + height, x, y + height - radius, radius);
-	ctx.lineTo(x, y + radius);
-	ctx.arcTo(x, y, x + radius, y, radius);
-	ctx.closePath();
-	ctx.fill();
-}
-export function pseudoMelToHz(pseudoMel: number, midShift: number): number {
-	// This exponent value controls the balance between linear and logarithmic scaling
-	const exponent = 0.6;
-	// Mid-shift adjustment
-	const adjustedMel = pseudoMel + midShift * pseudoMel;
-	return 700 * (Math.pow(10, Math.pow(adjustedMel / 2595, exponent)) - 1);
-}
-
-export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const formatTime = (seconds: number): string => {
 	const flooredSeconds = Math.floor(seconds);
@@ -41,19 +10,6 @@ export const formatTime = (seconds: number): string => {
 	const secs = flooredSeconds % 60;
 	return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 };
-export function getMaxInRange(
-	dataArray: Uint8Array,
-	lowerIndex: number,
-	upperIndex: number
-): number {
-	let maxValue = 0;
-	for (let i = lowerIndex; i <= upperIndex; i++) {
-		if (dataArray[i] > maxValue) {
-			maxValue = dataArray[i];
-		}
-	}
-	return maxValue;
-}
 
 export function sumTopXInRange(
 	dataArray: Uint8Array,
@@ -78,12 +34,6 @@ export function sumTopXInRange(
 	return sum / topValues.length;
 }
 
-export function isEmpty(arr: unknown[]) {
-	for (let i = 0; i < arr.length; i++) {
-		if (arr[i]) return false;
-	}
-	return true;
-}
 export function scaleExponentially(value: number, power: number): number {
 	const normalizedValue = value / 255;
 	const rescaledValue = Math.pow(normalizedValue, power) * 255;
@@ -112,19 +62,26 @@ export const stepper = (scaledValue: number, lowerIndex: number, divisor: number
 
 	return stepped * 255;
 };
-export const bufferToDataURL = (buffer: ArrayBuffer, imageType: string): string => {
-	let binary = '';
-	const bytes = new Uint8Array(buffer);
-	const len = bytes.byteLength;
 
-	for (let i = 0; i < len; i++) {
-		binary += String.fromCharCode(bytes[i]);
+export const spring = (t: number) => {
+	return Math.pow(Math.E, -6 * t ** 2) * Math.cos(7.5 * t * t - Math.PI) + 1;
+};
+
+export const shuffle = <T>(array: T[]): T[] => {
+	let currentIndex = array.length;
+	let randomIndex: number;
+
+	while (currentIndex > 0) {
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex--;
+
+		[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
 	}
 
-	const base64String = window.btoa(binary);
-	return `data:${imageType};base64,` + base64String;
+	return array;
 };
-export const artistsArrayToString = (
+
+const artistsArrayToString = (
 	artistsStr: string,
 	title: string,
 	commaExceptions: string[]
@@ -171,23 +128,6 @@ export const artistsArrayToString = (
 	});
 
 	return str;
-};
-export const spring = (t: number) => {
-	return Math.pow(Math.E, -6 * t ** 2) * Math.cos(7.5 * t * t - Math.PI) + 1;
-};
-
-export const shuffle = <T>(array: T[]): T[] => {
-	let currentIndex = array.length;
-	let randomIndex: number;
-
-	while (currentIndex > 0) {
-		randomIndex = Math.floor(Math.random() * currentIndex);
-		currentIndex--;
-
-		[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-	}
-
-	return array;
 };
 
 export const getMetadata = async (arrayBuffer: ArrayBuffer): Promise<App.Metadata> => {
