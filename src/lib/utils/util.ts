@@ -172,12 +172,15 @@ export const getMetadata = async (
 			.map((c) => c.hex)
 			.slice(0, 4);
 
-		// TODO: mimic colors for case of small length
-		// if (colors.length < 3) colors = [...colors, ...getColor(fetchMetadata.albumCoverUrl || '')];
+		// TODO? mimic colors for case of small length
 
 		accent =
-			colorsData.filter((e) => e.saturation > 0.45).sort((a, b) => b.area - a.area)[0]?.hex ||
-			colors[0];
+			colorsData
+				.filter((e) => e.area > 0.01)
+				.filter((e) => e.saturation > 0.3)
+				.sort((a, b) => b.area - a.area)[0]?.hex || colors[0];
+
+		console.log({ accent });
 	}
 	const metadata: App.Metadata = {
 		title: fetchMetadata.tags.TITLE || '',
