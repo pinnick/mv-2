@@ -67,7 +67,10 @@
 							arrayBuffer = await file.arrayBuffer();
 						} else return console.error('Could not load metadata!');
 					}
-					value.tracks[i].metadata = await getMetadata(arrayBuffer, track.file?.type || '');
+					value.tracks[i].metadata = await getMetadata(
+						arrayBuffer,
+						track.type || track.file?.type || ''
+					);
 				}
 			}
 
@@ -90,10 +93,10 @@
 			if (!$mediaElement) {
 				// PLAY DEMO SONG
 				if (newPlaying === PlayState.Playing) {
-					const url = '/demo1.flac';
+					const url = '/modjo-lady-320.mp3';
 					const blob = await fetch(url).then((r) => r.blob());
 					const arrayBuffer = await blob.arrayBuffer();
-					$queue.tracks = [{ url: '/demo1.flac', arrayBuffer }];
+					$queue.tracks = [{ url: '/modjo-lady-320.mp3', arrayBuffer, type: 'audio/mpeg' }];
 				}
 				return null;
 			}
