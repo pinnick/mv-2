@@ -67,7 +67,7 @@
 							arrayBuffer = await file.arrayBuffer();
 						} else return console.error('Could not load metadata!');
 					}
-					value.tracks[i].metadata = await getMetadata(arrayBuffer);
+					value.tracks[i].metadata = await getMetadata(arrayBuffer, track.file?.type || '');
 				}
 			}
 

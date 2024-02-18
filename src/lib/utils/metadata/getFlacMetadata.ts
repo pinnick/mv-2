@@ -34,12 +34,10 @@ export const getFlacMetadata = async (
 				albumCoverUrl = parsePictureBlock(dataView, offset + 4);
 				break;
 		}
-
 		if (blockHeader.isLastBlock) break;
 
 		offset += 4 + blockHeader.blockSize;
 	}
-
 	return { tags, albumCoverUrl };
 };
 

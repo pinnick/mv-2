@@ -2,6 +2,7 @@
 // import { fetchFromUrl } from 'music-metadata-browser';
 import { getFlacMetadata } from '$lib/utils/metadata/getFlacMetadata';
 import { extractColors } from 'extract-colors';
+import { getMp3Metadata } from './metadata/getMp3Metadata';
 export const invMel = (m: number): number => 700 * (Math.exp(m / 1127) - 1);
 
 export const formatTime = (seconds: number): string => {
@@ -130,41 +131,65 @@ const artistsArrayToString = (
 	return str;
 };
 
-export const getMetadata = async (arrayBuffer: ArrayBuffer): Promise<App.Metadata> => {
+export const getMetadata = async (
+	arrayBuffer: ArrayBuffer,
+	format: string
+): Promise<App.Metadata> => {
 	const t0 = performance.now();
+
 	const commaExceptions = [
 		'Tyler, The Creator',
 		'Earth, Wind & Fire',
 		'Crosby, Stills & Nash',
 		'Emerson, Lake & Palmer'
 	];
-	// TODO: only works for FLAC files as of now.
-	const newMetadata = await getFlacMetadata(arrayBuffer);
 
-	const colorsData = await extractColors(newMetadata.albumCoverUrl || '');
-	console.log(colorsData);
+	let fetchMetadata: {
+		tags: App.VorbisTags;
+		albumCoverUrl: string | null;
+	};
 
-	const colors = colorsData
-		.filter((e) => e.area > 0.02)
-		.sort((a, b) => b.intensity - a.intensity)
-		.map((c) => c.hex)
-		.slice(0, 4);
+	if (format === 'audio/mpeg') {
+		fetchMetadata = await getMp3Metadata(arrayBuffer);
+	} else fetchMetadata = await getFlacMetadata(arrayBuffer);
+	// else if (format === 'audio/flac') {
+	// 	fetchMetadata = await getFlacMetadata(arrayBuffer);
+	// }
 
+	// else {
+	// TODO default to old method of retrieval
+
+	// }
+	let colors: string[] = [];
+	if (fetchMetadata.albumCoverUrl) {
+		const colorsData = await extractColors(fetchMetadata.albumCoverUrl || '');
+		console.log({ colorsData });
+		colors = colorsData
+			// .filter((e) => e.area > 0.02)
+			// .sort((a, b) => b.intensity - a.intensity)
+			.filter((e) => e.intensity > 0.1) // 0.2 is arbitrary
+			.sort((a, b) => b.area - a.area)
+			.map((c) => c.hex)
+			.slice(0, 4);
+	}
 	const metadata: App.Metadata = {
-		title: newMetadata.tags.TITLE || '',
+		title: fetchMetadata.tags.TITLE || '',
 		artist: artistsArrayToString(
-			newMetadata.tags.ARTIST || '',
-			newMetadata.tags.TITLE || '',
+			fetchMetadata.tags.ARTIST || '',
+			fetchMetadata.tags.TITLE || '',
 			commaExceptions
 		),
-		album: newMetadata.tags.ALBUM || '',
+		album: fetchMetadata.tags.ALBUM || '',
 		explicit: false,
-		cover: newMetadata.albumCoverUrl,
+		cover: fetchMetadata.albumCoverUrl,
 		colors
+		// accent:
 	};
+
 	const t1 = performance.now();
 	const time = t1 - t0;
 	console.log('done in ' + time.toFixed(0) + ' ms');
+
 	return metadata;
 };
 
