@@ -1,5 +1,6 @@
 // this is still installed
 // import { fetchFromUrl } from 'music-metadata-browser';
+// import FastAverageColor from 'fast-average-color';
 import { getFlacMetadata } from '$lib/utils/metadata/getFlacMetadata';
 import { extractColors } from 'extract-colors';
 import { getMp3Metadata } from './metadata/getMp3Metadata';
@@ -161,16 +162,22 @@ export const getMetadata = async (
 
 	// }
 	let colors: string[] = [];
+	let accent: string = '';
+
 	if (fetchMetadata.albumCoverUrl) {
 		const colorsData = await extractColors(fetchMetadata.albumCoverUrl || '');
 		console.log({ colorsData });
 		colors = colorsData
-			// .filter((e) => e.area > 0.02)
-			// .sort((a, b) => b.intensity - a.intensity)
-			.filter((e) => e.intensity > 0.1) // 0.2 is arbitrary
 			.sort((a, b) => b.area - a.area)
 			.map((c) => c.hex)
 			.slice(0, 4);
+
+		// TODO: mimic colors for case of small length
+		// if (colors.length < 3) colors = [...colors, ...getColor(fetchMetadata.albumCoverUrl || '')];
+
+		accent =
+			colorsData.filter((e) => e.saturation > 0.45).sort((a, b) => b.area - a.area)[0]?.hex ||
+			colors[0];
 	}
 	const metadata: App.Metadata = {
 		title: fetchMetadata.tags.TITLE || '',
@@ -182,8 +189,8 @@ export const getMetadata = async (
 		album: fetchMetadata.tags.ALBUM || '',
 		explicit: false,
 		cover: fetchMetadata.albumCoverUrl,
-		colors
-		// accent:
+		colors,
+		accent
 	};
 
 	const t1 = performance.now();

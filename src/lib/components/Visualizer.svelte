@@ -122,8 +122,9 @@
 				style="height: {Math.max(
 					Math.round(dot * 1.15),
 					10
-				)}px; background-color: color-mix(in srgb, #ffffff  {Math.round(dot + 30)}%, {$metadata
-					?.colors[0] || '#ffffff'})"
+				)}px; background-color: color-mix(in srgb, #ffffff  {Math.round(
+					dot + 30
+				)}%, {$metadata?.accent || '#ffffff'})"
 			/>
 		{/each}
 	</div>

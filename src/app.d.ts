@@ -10,6 +10,7 @@ declare global {
 			cover: string | null;
 			colors: string[];
 			video?: string;
+			accent: string;
 		}
 		interface Properties {
 			scalingExponent: number;
