@@ -1,96 +1,41 @@
 <script lang="ts">
-	import { onDestroy, createEventDispatcher } from 'svelte';
-	import Text from './Text.svelte';
-	export let text: string;
-	export let bold = false;
-	export let explicit = false;
-	export let movement: number;
-	const dispatch = createEventDispatcher();
+	export let opacity = 1;
+	export let parentWidth: number;
+	export let childWidth: number;
+	export let overflowOffset = 44;
+	export let offset: number;
 
-	let finished = false;
-	let textWidth: number;
-	// +40 for text left margin
-	$: width = -(textWidth + 40);
-	let interval: NodeJS.Timeout;
-	let containerWidth: number;
-	$: shouldScroll = textWidth >= containerWidth - 50;
-	$: offset = movement > width && shouldScroll ? movement : 0;
+	$: overflow = childWidth >= parentWidth - overflowOffset;
 
-	$: if (width >= movement && offset === 0) {
-		dispatch('updateState', 1);
-		finished = true;
-	}
-	// -50 for text left margin & extra
-	$: if (shouldScroll) {
-		dispatch('updateState', 0);
-		finished = false;
-	}
-
-	// If movement reset and we should scroll, set finised to false
-	$: movement, movement === 0 && shouldScroll && (finished = false);
-
-	$: if (!shouldScroll && textWidth && containerWidth) dispatch('updateState', -1);
-
-	onDestroy(() => {
-		if (interval) clearInterval(interval);
-	});
+	$: marginLeft = overflow ? Math.min(offset, childWidth + overflowOffset) : 0;
+	// A maskRight value of "100%" will eliminate the right-side gradient, and "92%" will make it visible.
+	$: maskRight = overflow ? '92%' : '100%';
 </script>
 
-<div class="flex overflow-hidden w-[402px]">
-	<div
-		class="marquee text-2xl whitespace-nowrap {bold ? 'top' : 'bottom'}"
-		bind:clientWidth={containerWidth}
+<div class="whitespace-nowrap -ml-8 marquee gap-4" bind:clientWidth={parentWidth}>
+	<p
+		class="w-min max-w-full marquee-text pl-9 flex"
+		style="--opacity: {opacity}; --maskRight: {maskRight}; gap: {overflowOffset}px"
 	>
-		<div
-			class="flex"
-			style="transform: translateX({offset}px); color: {bold ? 'white' : 'lightgray'}"
-		>
-			{#if bold}
-				<button
-					on:click={() => (explicit = !explicit)}
-					class="mr-10 ml-6 flex items-center"
-					bind:clientWidth={textWidth}
-				>
-					<Text {text} {explicit} />
-				</button>
-			{:else}
-				<span class="mr-10 ml-6 flex items-center" bind:clientWidth={textWidth}>
-					<Text {text} {explicit} /></span
-				>
-			{/if}
-			{#if shouldScroll}
-				<span class="flex items-center"><Text {text} {explicit} /></span>
-			{/if}
-		</div>
-	</div>
+		<span bind:clientWidth={childWidth} style="margin-left: -{marginLeft}px"><slot /></span>
+		{#if overflow}
+			<slot />
+		{/if}
+	</p>
 </div>
 
 <style>
 	.marquee {
-		color: white;
-		width: 100%;
 		mask-size: 100% 100%;
 		mask-repeat: no-repeat;
 		mask-position: left;
 	}
-	.top {
-		font-weight: 600;
+	.marquee-text {
 		mask-image: linear-gradient(
 			to right,
 			transparent,
-			rgba(0, 0, 0, 1) 6%,
-			rgba(0, 0, 0, 1) 92%,
-			transparent
-		);
-	}
-	.bottom {
-		font-weight: 400;
-		margin-top: -0.25rem;
-		mask-image: linear-gradient(
-			to right,
-			transparent,
-			rgba(0, 0, 0, 0.7) 6%,
-			rgba(0, 0, 0, 0.7) 92%,
+			rgba(0, 0, 0, var(--opacity)) 6%,
+			rgba(0, 0, 0, var(--opacity)) var(--maskRight),
 			transparent
 		);
 	}
