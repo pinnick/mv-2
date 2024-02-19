@@ -1,9 +1,9 @@
 // this is still installed
-// import { fetchFromUrl } from 'music-metadata-browser';
 // import FastAverageColor from 'fast-average-color';
 import { getFlacMetadata } from '$lib/utils/metadata/getFlacMetadata';
 import { extractColors } from 'extract-colors';
-import { getMp3Metadata } from './metadata/getMp3Metadata';
+import { getMp3Metadata } from '$lib/utils/metadata/getMp3Metadata';
+import { getOtherMetadata } from '$lib/utils/metadata/getOtherMetadata';
 
 export const delay = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -155,15 +155,11 @@ export const getMetadata = async (
 
 	if (format === 'audio/mpeg') {
 		fetchMetadata = await getMp3Metadata(arrayBuffer);
-	} else fetchMetadata = await getFlacMetadata(arrayBuffer);
-	// else if (format === 'audio/flac') {
-	// 	fetchMetadata = await getFlacMetadata(arrayBuffer);
-	// }
+	} else if (format === 'audio/flac') fetchMetadata = await getFlacMetadata(arrayBuffer);
+	else {
+		fetchMetadata = await getOtherMetadata(arrayBuffer);
+	}
 
-	// else {
-	// TODO default to old method of retrieval
-
-	// }
 	let colors: string[] = [];
 	let accent: string = '';
 
@@ -185,6 +181,7 @@ export const getMetadata = async (
 
 		console.log({ accent });
 	}
+
 	const metadata: App.Metadata = {
 		title: fetchMetadata.tags.TITLE || '',
 		artist: artistsArrayToString(
