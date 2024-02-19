@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PlayState } from '$lib/types';
 	import { onMount } from 'svelte';
-	import { getMetadata, invMel } from '$lib/utils/util';
+	import { delay, getMetadata, invMel } from '$lib/utils/util';
 	import { mediaElement, playing, queue, metadata } from '$lib/store';
 	import MoreButton from '$lib/components/Player/MoreButton.svelte';
 	import Visualizer from '$lib/components/Visualizer.svelte';
@@ -93,10 +93,10 @@
 			if (!$mediaElement) {
 				// PLAY DEMO SONG
 				if (newPlaying === PlayState.Playing) {
-					const url = '/modjo-lady-320.mp3';
+					const url = '/demo-curry-320.mp3';
 					const blob = await fetch(url).then((r) => r.blob());
 					const arrayBuffer = await blob.arrayBuffer();
-					$queue.tracks = [{ url: '/modjo-lady-320.mp3', arrayBuffer, type: 'audio/mpeg' }];
+					$queue = { current: 0, tracks: [{ url, arrayBuffer, type: 'audio/mpeg' }], demo: true };
 				}
 				return null;
 			}

@@ -6,7 +6,7 @@ declare global {
 			title: string;
 			artist: string;
 			album: string;
-			explicit: booolean;
+			explicit?: boolean;
 			cover: string | null;
 			colors: string[];
 			video?: string;
@@ -26,6 +26,7 @@ declare global {
 		interface Queue {
 			current: number;
 			tracks: Track[];
+			demo?: boolean;
 		}
 		interface Track {
 			url: string;

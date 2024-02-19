@@ -6,7 +6,7 @@
 	$: title = $metadata?.title || ($mediaElement ? 'Unnamed track' : 'Not Playing');
 	$: artist = $metadata?.artist || '';
 
-	let explicit = false;
+	$: explicit = $queue.demo || !!$metadata?.explicit;
 	let interval: NodeJS.Timeout | null;
 
 	let offset: number = 0;

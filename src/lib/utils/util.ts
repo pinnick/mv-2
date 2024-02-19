@@ -193,7 +193,6 @@ export const getMetadata = async (
 			commaExceptions
 		),
 		album: fetchMetadata.tags.ALBUM || '',
-		explicit: false,
 		cover: fetchMetadata.albumCoverUrl,
 		colors,
 		accent
