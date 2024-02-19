@@ -30,7 +30,6 @@ export const getMp3Metadata = async (
 
 		if (frameId === 'APIC') {
 			// Album cover image
-			// TODO: Handle potential png
 			const mimeType = 'image/jpeg';
 			const descriptionEnd =
 				frameDataOffset +
