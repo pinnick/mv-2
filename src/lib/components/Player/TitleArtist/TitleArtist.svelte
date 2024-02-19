@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Marquee from '$lib/components/Player/TitleArtist/Marquee.svelte';
 	import { metadata, mediaElement, queue } from '$lib/store';
+	import { delay } from '$lib/utils/util';
 
 	$: title = $metadata?.title || ($mediaElement ? 'Unnamed track' : 'Not Playing');
 	$: artist = $metadata?.artist || '';
@@ -30,22 +31,20 @@
 		offset = 0;
 	};
 
-	const startMarquee = () => {
-		setTimeout(() => {
-			if (!interval && shouldMove)
-				interval = setInterval(() => {
-					offset += 1;
-				}, 28);
-		}, 3000);
+	const startMarquee = async () => {
+		await delay(3000);
+
+		if (!interval && shouldMove)
+			interval = setInterval(() => {
+				offset += 1;
+			}, 28);
 	};
 
-	$: if (!interval) {
-		if (shouldMove) startMarquee();
-		else resetMarquee();
-	}
-
 	// Reset marquee on song/queue changes
-	$: if ($queue) resetMarquee();
+	$: if ($queue) {
+		resetMarquee();
+		if (shouldMove) startMarquee();
+	}
 
 	$: if (interval && offset > Math.max(m1Child, m2Child) + overflowOffset) {
 		resetMarquee();

@@ -4,6 +4,9 @@
 import { getFlacMetadata } from '$lib/utils/metadata/getFlacMetadata';
 import { extractColors } from 'extract-colors';
 import { getMp3Metadata } from './metadata/getMp3Metadata';
+
+export const delay = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const invMel = (m: number): number => 700 * (Math.exp(m / 1127) - 1);
 
 export const formatTime = (seconds: number): string => {
