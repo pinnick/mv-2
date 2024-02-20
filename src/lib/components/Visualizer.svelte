@@ -9,7 +9,8 @@
 	} from '$lib/utils/util';
 	import { mediaElement, metadata, queue, playing } from '$lib/store';
 	import { detect } from 'detect-browser';
-	import '$lib/stripe-gradient.js';
+	// import '$lib/stripe-gradient.js';
+	import { Gradient } from 'whatamesh';
 	import { PlayState } from '$lib/types';
 	import Dot from '$lib/components/Dot.svelte';
 
@@ -21,7 +22,6 @@
 	let dataArray: Uint8Array;
 	let source: MediaElementAudioSourceNode;
 	let fileSrc: string;
-	// let animationId: number;
 	$: visible = !!$mediaElement;
 	$: barCount = upperBounds.length - 1;
 	let heights: number[] = new Array(barCount).fill(0);
@@ -92,13 +92,10 @@
 			source.connect(analyser);
 			analyser.connect(audioContext.destination);
 			const prevSong: App.Track | undefined = $queue.tracks[$queue.current - 1];
-			if (!prevSong || prevSong.metadata?.album !== $metadata?.album)
-				(async () => {
-					new Gradient({
-						canvas: '#gradient-canvas',
-						colors: $metadata?.colors || ['#ffffff']
-					});
-				})();
+			if (!prevSong || prevSong.metadata?.album !== $metadata?.album) {
+				const gradient = new Gradient();
+				gradient.initGradient('#gradient-canvas');
+			}
 		}
 	}
 	onDestroy(() => {
@@ -121,6 +118,9 @@
 	id="gradient-canvas"
 	data-transition-in
 	class="-z-30 w-screen h-screen absolute top-0 left-0 opacity-25"
+	style="--gradient-color-1:{$metadata?.colors[0]};--gradient-color-2:{$metadata
+		?.colors[1]};--gradient-color-3:{$metadata?.colors[2]};--gradient-color-4:{$metadata
+		?.colors[3]};"
 />
 <!-- <div
 	class="w-screen h-screen absolute top-0 left-0 -z-20 brightness-75"

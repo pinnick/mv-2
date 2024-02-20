@@ -10,7 +10,7 @@
 	$: height = Math.max(Math.round(value * 1.15), 10);
 
 	$: color = colord($metadata?.accent || '#cccccc')
-		.mix('#ffffff', Math.min(1, (value + 15) / 100))
+		.mix('#ffffff', Math.min(1, (value + 30) / 100))
 		.toHex();
 </script>
 
