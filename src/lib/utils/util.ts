@@ -164,18 +164,19 @@ export const getMetadata = async (
 	let accent: string = '';
 
 	if (fetchMetadata.albumCoverUrl) {
-		const colorsData = await extractColors(fetchMetadata.albumCoverUrl || '');
+		let colorsData = await extractColors(fetchMetadata.albumCoverUrl || '');
 		console.log({ colorsData });
+
+		colorsData = colorsData.filter((e) => e.area > 0.01);
+
+		// TODO? mimic colors for case of small length
 		colors = colorsData
 			.sort((a, b) => b.area - a.area)
 			.map((c) => c.hex)
 			.slice(0, 4);
 
-		// TODO? mimic colors for case of small length
-
 		accent =
 			colorsData
-				.filter((e) => e.area > 0.01)
 				.filter((e) => e.saturation > 0.1)
 				.filter((e) => e.intensity > 0.03)
 				.sort((a, b) => b.area - a.area)[0]?.hex || colors[0];
