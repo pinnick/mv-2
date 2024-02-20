@@ -11,6 +11,7 @@
 	import { detect } from 'detect-browser';
 	import '$lib/stripe-gradient.js';
 	import { PlayState } from '$lib/types';
+	import Dot from '$lib/components/Dot.svelte';
 
 	export let upperBounds: number[];
 	export let sumTotal: number;
@@ -30,7 +31,7 @@
 		bass = 0;
 		if (!analyser) return;
 		analyser.getByteFrequencyData(dataArray);
-		heights = [];
+		const newHeights: number[] = [];
 		for (let i = 0; i < barCount; i++) {
 			// upperBounds is an array containing upper frequency bounds for each bar.
 			const lowerFreq = upperBounds[i];
@@ -52,9 +53,9 @@
 
 			const scaledBin = scaleExponentially(steppedValue, dynamicScalingExponent);
 			if (i < 4) bass += scaledBin / (255 * 3 * 9);
-			heights.push(scaledBin);
+			newHeights.push(scaledBin);
 		}
-		// requestAnimationFrame(calcHeights);
+		heights = newHeights;
 	};
 
 	$: if (visible) {
@@ -70,10 +71,6 @@
 			bufferLength = analyser.frequencyBinCount;
 			dataArray = new Uint8Array(bufferLength);
 		}
-		// if (animationId) {
-		// 	cancelAnimationFrame(animationId);
-		// }
-		// animationId = requestAnimationFrame(calcHeights);
 	}
 	$: if ($playing === PlayState.Playing && !interval) {
 		interval = setInterval(calcHeights, 6);
@@ -87,7 +84,6 @@
 	}
 
 	$: if ($mediaElement) {
-		// console.log(analyser);
 		if ($mediaElement.src !== fileSrc) {
 			fileSrc = $mediaElement.src;
 			source?.disconnect();
@@ -117,15 +113,7 @@
 		transition:fade|global
 	>
 		{#each heights as dot, i (i)}
-			<div
-				class="w-[9px] min-h-[8px] rounded-full dot"
-				style="height: {Math.max(
-					Math.round(dot * 1.15),
-					10
-				)}px; background-color: color-mix(in srgb, #ffffff  {Math.round(
-					dot + 30
-				)}%, {$metadata?.accent || '#ffffff'})"
-			/>
+			<Dot value={dot} />
 		{/each}
 	</div>
 {/if}
