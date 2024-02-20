@@ -177,6 +177,7 @@ export const getMetadata = async (
 			colorsData
 				.filter((e) => e.area > 0.01)
 				.filter((e) => e.saturation > 0.3)
+				.filter((e) => e.intensity > 0.03)
 				.sort((a, b) => b.area - a.area)[0]?.hex || colors[0];
 
 		console.log({ accent });
