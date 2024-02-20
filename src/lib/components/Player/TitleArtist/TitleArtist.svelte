@@ -59,7 +59,7 @@
 			<button on:click={() => (explicit = !explicit)} class="flex items-center justify-center">
 				{title}
 				{#if explicit}
-					<span class="ml-1.5 mt-0.5">
+					<span class="ml-[7px]">
 						<svg width={18} height={18} viewBox="3 3 18 18">
 							<path
 								fill="color-mix(in srgb, {$metadata?.accent || '#fff'} 30%, #ccc)"
