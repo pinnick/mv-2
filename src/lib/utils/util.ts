@@ -172,8 +172,9 @@ export const getMetadata = async (
 		// TODO? mimic colors for case of small length
 		colors = colorsData
 			.sort((a, b) => b.area - a.area)
-			.map((c) => c.hex)
-			.slice(0, 4);
+			.slice(0, 4)
+			.sort((a, b) => b.lightness - a.lightness)
+			.map((c) => c.hex);
 
 		accent =
 			colorsData

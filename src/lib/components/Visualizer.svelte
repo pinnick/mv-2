@@ -9,9 +9,14 @@
 	} from '$lib/utils/util';
 	import { mediaElement, metadata, queue, playing } from '$lib/store';
 	import { detect } from 'detect-browser';
-	// import '$lib/stripe-gradient.js';
-	import { Gradient } from 'whatamesh';
+	import { Gradient } from '$lib/Gradient';
 	import { PlayState } from '$lib/types';
+
+	import { colord, extend } from 'colord';
+	import mixPlugin from 'colord/plugins/mix';
+
+	extend([mixPlugin]);
+
 	import Dot from '$lib/components/Dot.svelte';
 
 	export let upperBounds: number[];
@@ -22,13 +27,13 @@
 	let dataArray: Uint8Array;
 	let source: MediaElementAudioSourceNode;
 	let fileSrc: string;
+	let gradient: Gradient;
 	$: visible = !!$mediaElement;
 	$: barCount = upperBounds.length - 1;
 	let heights: number[] = new Array(barCount).fill(0);
-	let bass: number = 0;
 	let interval: NodeJS.Timeout | null = null;
+	// let bassColor: string;
 	const calcHeights = () => {
-		bass = 0;
 		if (!analyser) return;
 		analyser.getByteFrequencyData(dataArray);
 		const newHeights: number[] = [];
@@ -52,8 +57,28 @@
 			const steppedValue = stepper(topBinAvg, lowerIndex, 2000);
 
 			const scaledBin = scaleExponentially(steppedValue, dynamicScalingExponent);
-			if (i < 4) bass += scaledBin / (255 * 3 * 9);
 			newHeights.push(scaledBin);
+		}
+		let topSlice: number;
+		switch (newHeights.length) {
+			case 30:
+				topSlice = 2;
+				break;
+			case 45:
+				topSlice = 3;
+				break;
+			case 60:
+				topSlice = 4;
+				break;
+			default:
+				topSlice = 5;
+		}
+		const bass = newHeights.slice(0, 5).reduce((a, b) => a + b) / 5 / 255;
+		const mix = Math.max(0, bass);
+		if (gradient && $metadata && $metadata.colors.length > 1) {
+			const bassColor = colord($metadata.colors[0]).mix('#000000', mix).toHex();
+			// TODO: Add smoothing function
+			gradient.setBaseColor(bassColor);
 		}
 		heights = newHeights;
 	};
@@ -67,7 +92,7 @@
 			analyser.fftSize = 1024 * 2 ** Math.max(power, 2);
 			const browser = detect();
 			if (browser?.name === 'firefox') analyser.smoothingTimeConstant = 0.92;
-			else analyser.smoothingTimeConstant = 0.82;
+			else analyser.smoothingTimeConstant = 0.87;
 			bufferLength = analyser.frequencyBinCount;
 			dataArray = new Uint8Array(bufferLength);
 		}
@@ -93,8 +118,9 @@
 			analyser.connect(audioContext.destination);
 			const prevSong: App.Track | undefined = $queue.tracks[$queue.current - 1];
 			if (!prevSong || prevSong.metadata?.album !== $metadata?.album) {
-				const gradient = new Gradient();
+				gradient = new Gradient();
 				gradient.initGradient('#gradient-canvas');
+				// setTimeout(() => gradient.initGradient('#gradient-canvas'), 2000);
 			}
 		}
 	}
