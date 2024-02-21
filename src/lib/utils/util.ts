@@ -5,6 +5,10 @@ import { extractColors } from 'extract-colors';
 import { getMp3Metadata } from '$lib/utils/metadata/getMp3Metadata';
 import { getOtherMetadata } from '$lib/utils/metadata/getOtherMetadata';
 
+export const average = (array: number[]): number => {
+	return array.reduce((a, b) => a + b) / array.length;
+};
+
 export const delay = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const invMel = (m: number): number => 700 * (Math.exp(m / 1127) - 1);
@@ -164,7 +168,12 @@ export const getMetadata = async (
 	let accent: string = '';
 
 	if (fetchMetadata.albumCoverUrl) {
-		let colorsData = await extractColors(fetchMetadata.albumCoverUrl || '');
+		let colorsData = await extractColors(fetchMetadata.albumCoverUrl || '', {
+			hueDistance: 0.1,
+			lightnessDistance: 0.05,
+			saturationDistance: 0.1,
+			distance: 0.1
+		});
 		console.log({ colorsData });
 
 		colorsData = colorsData.filter((e) => e.area > 0.01);
@@ -175,6 +184,8 @@ export const getMetadata = async (
 			.slice(0, 4)
 			.sort((a, b) => b.lightness - a.lightness)
 			.map((c) => c.hex);
+
+		console.log({ colors });
 
 		accent =
 			colorsData

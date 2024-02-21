@@ -59,7 +59,7 @@ class Gradient {
 	 */
 	hideGradientLegend(): void;
 
-	setBaseColor(color: string): void;
+	setBassColor(primary: string, secondary?: string): void;
 }
 
 export { Gradient };

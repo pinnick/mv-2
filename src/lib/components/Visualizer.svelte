@@ -2,6 +2,7 @@
 	import { onDestroy } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import {
+		average,
 		findDynamicScalingExponent,
 		scaleExponentially,
 		stepper,
@@ -59,26 +60,39 @@
 			const scaledBin = scaleExponentially(steppedValue, dynamicScalingExponent);
 			newHeights.push(scaledBin);
 		}
-		let topSlice: number;
+		let primarySlice: number;
+		let secondarySlice: number;
 		switch (newHeights.length) {
 			case 30:
-				topSlice = 2;
+				primarySlice = 1;
+				secondarySlice = 1;
 				break;
 			case 45:
-				topSlice = 3;
+				primarySlice = 2;
+				secondarySlice = 1;
 				break;
 			case 60:
-				topSlice = 4;
+				primarySlice = 2;
+				secondarySlice = 2;
 				break;
 			default:
-				topSlice = 5;
+				primarySlice = 3;
+				secondarySlice = 3;
 		}
-		const bass = newHeights.slice(0, 5).reduce((a, b) => a + b) / 5 / 255;
-		const mix = Math.max(0, bass);
+		const primaryAmp = average(newHeights.slice(0, primarySlice)) / 255;
+		const secondaryAmp =
+			average(newHeights.slice(primarySlice, primarySlice + secondarySlice)) / 255;
+
+		const primaryMix = Math.max(0, primaryAmp);
+		const secondaryMix = Math.max(0, secondaryAmp);
 		if (gradient && $metadata && $metadata.colors.length > 1) {
-			const bassColor = colord($metadata.colors[0]).mix('#000000', mix).toHex();
+			const primary = colord($metadata.colors[0]).mix('#000000', primaryMix).toHex();
 			// TODO: Add smoothing function
-			gradient.setBaseColor(bassColor);
+			const secondary =
+				$metadata.colors.length > 3
+					? colord($metadata.colors[1]).mix('#000000', secondaryMix).toHex()
+					: undefined;
+			gradient.setBassColor(primary, secondary);
 		}
 		heights = newHeights;
 	};

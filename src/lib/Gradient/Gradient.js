@@ -5,7 +5,7 @@
  *   commented out for now.
  *   https://kevinhufnagl.com
  *
- * 	 Extended behavior by adding setBaseColor(color: string) - Jordan Pinnick
+ * 	 Extended behavior by adding setBassColor(primary: string, secondary?: string) - Jordan Pinnick
  */
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -434,7 +434,7 @@ function e(object, propertyName, val) {
 
 //Gradient object
 class Gradient {
-	constructor(...t) {
+	constructor() {
 		e(this, 'el', void 0),
 			e(this, 'cssVarRetries', 0),
 			e(this, 'maxCssVarRetries', 200),
@@ -511,9 +511,25 @@ class Gradient {
 				this.connect();
 				return this;
 			});
-		e(this, 'setBaseColor', (color) => {
-			this.uniforms.u_baseColor.value = normalizeColor(parseInt(color.slice(1), 16));
-		});
+
+		e(
+			this,
+			'setBassColor',
+			/**
+			 * Sets base and first u_waveLayer color. Can be used to respond to bass frequencies (or any for that matter)
+			 * @param primary - Primary color
+			 * @param secondary - Secondary color
+			 * @returns {void}
+			 * @type {(primary: string, secondary?: string) => void}
+			 */
+			(primary, secondary) => {
+				this.uniforms.u_baseColor.value = normalizeColor(parseInt(primary.slice(1), 16));
+				if (secondary)
+					this.uniforms.u_waveLayers.value[0].value.color.value = normalizeColor(
+						parseInt(secondary.slice(1), 16)
+					);
+			}
+		);
 	}
 	async connect() {
 		(this.shaderFiles = {
