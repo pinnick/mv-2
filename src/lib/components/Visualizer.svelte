@@ -83,8 +83,9 @@
 					primarySlice = 3;
 					secondarySlice = 3;
 			}
-
+			if ($metadata.colors.length < 3) primarySlice += secondarySlice;
 			const primaryAmp = average(newHeights.slice(0, primarySlice)) / 255;
+
 			const secondaryAmp =
 				average(newHeights.slice(primarySlice, primarySlice + secondarySlice)) / 255;
 
