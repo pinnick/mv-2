@@ -31,6 +31,8 @@
 	let gradient: Gradient;
 	$: visible = !!$mediaElement;
 	$: barCount = upperBounds.length - 1;
+	let prevBass: [number, number] = [0, 0];
+	const bassSmoothing = 0.005;
 	let heights: number[] = new Array(barCount).fill(0);
 	let interval: NodeJS.Timeout | null = null;
 	// let bassColor: string;
@@ -60,39 +62,44 @@
 			const scaledBin = scaleExponentially(steppedValue, dynamicScalingExponent);
 			newHeights.push(scaledBin);
 		}
-		let primarySlice: number;
-		let secondarySlice: number;
-		switch (newHeights.length) {
-			case 30:
-				primarySlice = 1;
-				secondarySlice = 1;
-				break;
-			case 45:
-				primarySlice = 2;
-				secondarySlice = 1;
-				break;
-			case 60:
-				primarySlice = 2;
-				secondarySlice = 2;
-				break;
-			default:
-				primarySlice = 3;
-				secondarySlice = 3;
-		}
-		const primaryAmp = average(newHeights.slice(0, primarySlice)) / 255;
-		const secondaryAmp =
-			average(newHeights.slice(primarySlice, primarySlice + secondarySlice)) / 255;
 
-		const primaryMix = Math.max(0, primaryAmp);
-		const secondaryMix = Math.max(0, secondaryAmp);
 		if (gradient && $metadata && $metadata.colors.length > 1) {
+			let primarySlice: number;
+			let secondarySlice: number;
+			switch (newHeights.length) {
+				case 30:
+					primarySlice = 1;
+					secondarySlice = 1;
+					break;
+				case 45:
+					primarySlice = 2;
+					secondarySlice = 1;
+					break;
+				case 60:
+					primarySlice = 2;
+					secondarySlice = 2;
+					break;
+				default:
+					primarySlice = 3;
+					secondarySlice = 3;
+			}
+
+			const primaryAmp = average(newHeights.slice(0, primarySlice)) / 255;
+			const secondaryAmp =
+				average(newHeights.slice(primarySlice, primarySlice + secondarySlice)) / 255;
+
+			let primaryMix = Math.max(primaryAmp, prevBass[0] - bassSmoothing);
+			let secondaryMix = Math.max(secondaryAmp, prevBass[1] - bassSmoothing);
+
 			const primary = colord($metadata.colors[0]).mix('#000000', primaryMix).toHex();
-			// TODO: Add smoothing function
 			const secondary =
 				$metadata.colors.length > 3
 					? colord($metadata.colors[1]).mix('#000000', secondaryMix).toHex()
 					: undefined;
+
 			gradient.setBassColor(primary, secondary);
+
+			prevBass = [primaryMix, secondaryMix];
 		}
 		heights = newHeights;
 	};
