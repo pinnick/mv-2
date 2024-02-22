@@ -5,7 +5,7 @@
  *   commented out for now.
  *   https://kevinhufnagl.com
  *
- * 	 Extended behavior by adding setBassColor(primary: string, secondary?: string) - Jordan Pinnick
+ * 	 Extended behavior by adding setBassColor(primary: string, secondary?: string) and resize delay - Jordan Pinnick
  */
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -435,6 +435,7 @@ function e(object, propertyName, val) {
 //Gradient object
 class Gradient {
 	constructor() {
+		let resizeTimeout;
 		e(this, 'el', void 0),
 			e(this, 'cssVarRetries', 0),
 			e(this, 'maxCssVarRetries', 200),
@@ -451,7 +452,7 @@ class Gradient {
 			e(this, 'last', 0),
 			e(this, 'width', void 0),
 			e(this, 'minWidth', 1111),
-			e(this, 'height', 600),
+			e(this, 'height', void 0),
 			e(this, 'xSegCount', void 0),
 			e(this, 'ySegCount', void 0),
 			e(this, 'mesh', void 0),
@@ -468,14 +469,21 @@ class Gradient {
 			e(this, 'isMetaKey', !1),
 			e(this, 'isGradientLegendVisible', !1),
 			e(this, 'resize', () => {
-				(this.width = window.innerWidth),
-					this.minigl.setSize(this.width, this.height),
-					this.minigl.setOrthographicCamera(),
-					(this.xSegCount = Math.ceil(this.width * this.conf.density[0])),
-					(this.ySegCount = Math.ceil(this.height * this.conf.density[1])),
-					this.mesh.geometry.setTopology(this.xSegCount, this.ySegCount),
-					this.mesh.geometry.setSize(this.width, this.height),
-					(this.mesh.material.uniforms.u_shadow_power.value = this.width < 600 ? 5 : 6);
+				clearTimeout(resizeTimeout);
+				resizeTimeout = setTimeout(() => {
+					this.width = window.innerWidth;
+					this.height = window.innerHeight;
+
+					this.minigl.setSize(this.width, this.height);
+					this.minigl.setOrthographicCamera();
+
+					this.xSegCount = Math.ceil(this.width * this.conf.density[0]);
+					this.ySegCount = Math.ceil(this.height * this.conf.density[1]);
+
+					this.mesh.geometry.setTopology(this.xSegCount, this.ySegCount);
+					this.mesh.geometry.setSize(this.width, this.height);
+					this.mesh.material.uniforms.u_shadow_power.value = this.width < 600 ? 5 : 6;
+				}, 100);
 			}),
 			e(this, 'animate', (e) => {
 				if (!this.shouldSkipFrame(e)) {
