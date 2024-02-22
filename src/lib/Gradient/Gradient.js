@@ -559,7 +559,7 @@ class Gradient {
 					}));
 	}
 	disconnect() {
-		// 	window.removeEventListener('resize', this.resize);
+		window.removeEventListener('resize', this.resize);
 	}
 	initMaterial() {
 		// console.log('initmaterial');
@@ -695,7 +695,7 @@ class Gradient {
 	}
 	init() {
 		this.initGradientColors(), this.initMesh(), this.resize(), requestAnimationFrame(this.animate);
-		// window.addEventListener('resize', this.resize);
+		window.addEventListener('resize', this.resize);
 	}
 	/*
 	 * Waiting for the css variables to become available, usually on page load before we can continue.
