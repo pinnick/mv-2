@@ -4,6 +4,7 @@ import { getFlacMetadata } from '$lib/utils/metadata/getFlacMetadata';
 import { extractColors } from 'extract-colors';
 import { getMp3Metadata } from '$lib/utils/metadata/getMp3Metadata';
 import { getOtherMetadata } from '$lib/utils/metadata/getOtherMetadata';
+import { colord } from 'colord';
 
 export const average = (array: number[]): number => {
 	return array.reduce((a, b) => a + b) / array.length;
@@ -178,7 +179,6 @@ export const getMetadata = async (
 
 		colorsData = colorsData.filter((e) => e.area > 0.01);
 
-		// TODO? mimic colors for case of small length
 		colors = colorsData
 			.sort((a, b) => b.area - a.area)
 			.slice(0, 4)
@@ -186,6 +186,10 @@ export const getMetadata = async (
 			.map((c) => c.hex);
 
 		console.log({ colors });
+
+		// Mimic colors for case of small length
+		if (!colors[1]) colors[1] = colord(colors[0]).saturate(0.25).darken(0.1).toHex();
+		if (!colors[2]) colors[2] = colord(colors[0]).mix(colors[1]).saturate(0.1).toHex();
 
 		accent =
 			colorsData
