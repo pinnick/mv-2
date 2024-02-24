@@ -193,9 +193,9 @@ export const getMetadata = async (
 
 		accent =
 			colorsData
-				.filter((e) => e.saturation > 0.1)
-				.filter((e) => e.intensity > 0.03)
-				.sort((a, b) => b.area - a.area)[0]?.hex || colors[0];
+				.filter((e) => e.saturation < 0.9)
+				.filter((e) => e.intensity < 0.97)
+				.sort((a, b) => b.intensity - a.intensity)[0]?.hex || '#cccccc';
 
 		console.log({ accent });
 	}
