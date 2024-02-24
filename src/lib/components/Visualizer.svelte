@@ -10,7 +10,7 @@
 	} from '$lib/utils/util';
 	import { mediaElement, metadata, queue, playing } from '$lib/store';
 	import { detect } from 'detect-browser';
-	import { Gradient } from '$lib/Gradient';
+	import { initGradient, setBassColor, disconnect, pause } from '$lib/Gradient';
 	import { PlayState } from '$lib/types';
 
 	import { colord, extend } from 'colord';
@@ -28,7 +28,6 @@
 	let dataArray: Uint8Array;
 	let source: MediaElementAudioSourceNode;
 	let fileSrc: string;
-	let gradient: Gradient;
 	$: visible = !!$mediaElement;
 	$: barCount = upperBounds.length - 1;
 	let prevBass: [number, number] = [0, 0];
@@ -63,7 +62,7 @@
 			newHeights.push(scaledBin);
 		}
 
-		if (gradient && $metadata && $metadata.colors.length > 1) {
+		if ($metadata && $metadata.colors.length > 1) {
 			let primarySlice: number;
 			let secondarySlice: number;
 			switch (newHeights.length) {
@@ -98,7 +97,7 @@
 					? colord($metadata.colors[1]).mix('#000000', secondaryMix).toHex()
 					: undefined;
 
-			gradient.setBassColor(primary, secondary);
+			setBassColor(primary, secondary);
 
 			prevBass = [primaryMix, secondaryMix];
 		}
@@ -131,7 +130,9 @@
 	}
 
 	$: if ($mediaElement) {
+		console.log('hol up');
 		if ($mediaElement.src !== fileSrc) {
+			console.log('restart!');
 			fileSrc = $mediaElement.src;
 			source?.disconnect();
 
@@ -139,16 +140,19 @@
 			source.connect(analyser);
 			analyser.connect(audioContext.destination);
 			const prevSong: App.Track | undefined = $queue.tracks[$queue.current - 1];
-			if ((!prevSong || prevSong.metadata?.album !== $metadata?.album) && $metadata?.colors) {
-				gradient = new Gradient();
-				gradient.initGradient('#gradient-canvas', $metadata?.colors);
-				// setTimeout(() => gradient.initGradient('#gradient-canvas'), 2000);
+
+			if (
+				(prevSong === undefined || prevSong.metadata?.album !== $metadata?.album) &&
+				$metadata?.colors
+			) {
+				initGradient('#gradient-canvas', $metadata?.colors);
 			}
 		}
 	}
 	onDestroy(() => {
 		source.disconnect();
 		audioContext.close();
+		disconnect();
 	});
 </script>
 
