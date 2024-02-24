@@ -6,7 +6,7 @@
 	$: title = $metadata?.title || ($mediaElement ? 'Unnamed track' : 'Not Playing');
 	$: artist = $metadata?.artist || '';
 
-	$: explicit = $queue.demo || !!$metadata?.explicit;
+	let explicit = false;
 	let interval: NodeJS.Timeout | null;
 
 	let offset: number = 0;
@@ -42,6 +42,7 @@
 
 	// Reset marquee on song/queue changes
 	$: if ($queue) {
+		if ($queue.demo) explicit = true;
 		resetMarquee();
 		if (shouldMove) startMarquee();
 	}
