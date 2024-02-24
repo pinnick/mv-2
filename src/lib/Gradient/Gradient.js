@@ -418,19 +418,19 @@ class MiniGl {
 }
 
 //Sets initial properties
-function e(object, propertyName, val) {
-	return (
-		propertyName in object
-			? Object.defineProperty(object, propertyName, {
-					value: val,
-					enumerable: !0,
-					configurable: !0,
-					writable: !0
-				})
-			: (object[propertyName] = val),
-		object
-	);
-}
+// function e(object, propertyName, val) {
+// 	return (
+// 		propertyName in object
+// 			? Object.defineProperty(object, propertyName, {
+// 					value: val,
+// 					enumerable: !0,
+// 					configurable: !0,
+// 					writable: !0
+// 				})
+// 			: (object[propertyName] = val),
+// 		object
+// 	);
+// }
 
 //Gradient object
 class Gradient {
@@ -438,109 +438,108 @@ class Gradient {
 		let resizeTimeout;
 		this.el = undefined;
 		this.sectionColorsHex = [];
-		// todo: change all of these
-		e(this, 'angle', 0),
-			e(this, 'isIntersecting', !1),
-			e(this, 'shaderFiles', void 0),
-			e(this, 'vertexShader', void 0),
-			e(this, 'sectionColors', void 0),
-			e(this, 'conf', void 0),
-			e(this, 'uniforms', void 0),
-			e(this, 't', 1253106),
-			e(this, 'last', 0),
-			e(this, 'width', void 0),
-			e(this, 'minWidth', 1111),
-			e(this, 'height', void 0),
-			e(this, 'xSegCount', void 0),
-			e(this, 'ySegCount', void 0),
-			e(this, 'mesh', void 0),
-			e(this, 'material', void 0),
-			e(this, 'geometry', void 0),
-			e(this, 'minigl', void 0),
-			e(this, 'scrollObserver', void 0),
-			e(this, 'amp', 320),
-			e(this, 'seed', 5),
-			e(this, 'freqX', 14e-5),
-			e(this, 'freqY', 29e-5),
-			e(this, 'freqDelta', 1e-5),
-			e(this, 'activeColors', [1, 1, 1, 1]),
-			e(this, 'isMetaKey', !1),
-			e(this, 'isGradientLegendVisible', !1),
-			e(this, 'resize', () => {
-				clearTimeout(resizeTimeout);
-				resizeTimeout = setTimeout(() => {
-					this.width = window.innerWidth;
-					this.height = window.innerHeight;
+		this.angle = 0;
+		this.isIntersecting = false;
+		this.shaderFiles = undefined;
+		this.vertexShader = undefined;
+		this.sectionColors = undefined;
+		this.conf = undefined;
+		this.uniforms = undefined;
+		this.t = 1253106;
+		this.last = 0;
+		this.width = undefined;
+		this.minWidth = 1111;
+		this.height = undefined;
+		this.xSegCount = undefined;
+		this.ySegCount = undefined;
+		this.mesh = undefined;
+		this.material = undefined;
+		this.geometry = undefined;
+		this.minigl = undefined;
+		this.scrollObserver = undefined;
+		this.amp = 320;
+		this.seed = 5;
+		this.freqX = 14e-5;
+		this.freqY = 29e-5;
+		this.freqDelta = 1e-5;
+		this.activeColors = [1, 1, 1, 1];
+		this.isMetaKey = false;
+		this.isGradientLegendVisible = false;
 
-					this.minigl.setSize(this.width, this.height);
-					this.minigl.setOrthographicCamera();
+		this.resize = () => {
+			clearTimeout(resizeTimeout);
+			resizeTimeout = setTimeout(() => {
+				this.width = window.innerWidth;
+				this.height = window.innerHeight;
 
-					this.xSegCount = Math.ceil(this.width * this.conf.density[0]);
-					this.ySegCount = Math.ceil(this.height * this.conf.density[1]);
+				this.minigl.setSize(this.width, this.height);
+				this.minigl.setOrthographicCamera();
 
-					this.mesh.geometry.setTopology(this.xSegCount, this.ySegCount);
-					this.mesh.geometry.setSize(this.width, this.height);
-					this.mesh.material.uniforms.u_shadow_power.value = this.width < 600 ? 5 : 6;
-				}, 100);
-			}),
-			e(this, 'animate', (e) => {
-				if (!this.shouldSkipFrame(e)) {
-					this.t += Math.min(e - this.last, 1e3 / 15);
-					this.last = e;
+				this.xSegCount = Math.ceil(this.width * this.conf.density[0]);
+				this.ySegCount = Math.ceil(this.height * this.conf.density[1]);
 
-					this.mesh.material.uniforms.u_time.value = this.t;
-					this.minigl.render();
-				}
-				if (0 !== this.last && this.isStatic) {
-					return this.minigl.render(), void this.disconnect();
-				}
-				if (this.conf.playing) {
-					requestAnimationFrame(this.animate);
-				}
-			}),
-			e(this, 'pause', () => {
-				this.conf.playing = false;
-			}),
-			e(this, 'play', () => {
-				requestAnimationFrame(this.animate), (this.conf.playing = true);
-			}),
-			/**
-			 * Initializes the gradient with the provided selector.
-			 *
-			 * @param {string} selector - The selector to your canvas.
-			 * @param {string[]} colors - The array of colors to pass to the gradient. Max length of 4
-			 * @memberof Gradient
-			 */
-			(this.initGradient = (selector, colors) => {
-				this.el = document.querySelector(selector);
-				this.sectionColorsHex = colors.slice(0, 4);
-				this.connect();
+				this.mesh.geometry.setTopology(this.xSegCount, this.ySegCount);
+				this.mesh.geometry.setSize(this.width, this.height);
+				this.mesh.material.uniforms.u_shadow_power.value = this.width < 600 ? 5 : 6;
+			}, 100);
+		};
+		this.animate = (e) => {
+			if (!this.shouldSkipFrame(e)) {
+				this.t += Math.min(e - this.last, 1e3 / 15);
+				this.last = e;
 
-				this.initGradientColors();
-				this.initMesh();
-				this.resize();
-				requestAnimationFrame(this.animate);
-				window.addEventListener('resize', this.resize);
-			});
-
-		e(
-			this,
-			'setBassColor',
-			/**
-			 * Sets base and first u_waveLayer color. Can be used to respond to bass frequencies (or any for that matter)
-			 * @param primary - Primary color
-			 * @param secondary - Secondary color
-			 * @returns {void}
-			 * @type {(primary: string, secondary?: string) => void}
-			 */
-			(primary, secondary) => {
-				this.uniforms.u_baseColor.value = normalizeColor(parseInt(primary.slice(1), 16));
-				if (secondary)
-					this.uniforms.u_waveLayers.value[0].value.color.value = normalizeColor(
-						parseInt(secondary.slice(1), 16)
-					);
+				this.mesh.material.uniforms.u_time.value = this.t;
+				this.minigl.render();
 			}
-		);
+			if (0 !== this.last && this.isStatic) {
+				return this.minigl.render(), void this.disconnect();
+			}
+			if (this.conf.playing) {
+				requestAnimationFrame(this.animate);
+			}
+		};
+
+		this.pause = () => {
+			this.conf.playing = false;
+		};
+
+		this.play = () => {
+			requestAnimationFrame(this.animate);
+			this.conf.playing = true;
+		};
+
+		/**
+		 * Initializes the gradient with the provided selector.
+		 *
+		 * @param {string} selector - The selector to your canvas.
+		 * @param {string[]} colors - The array of colors to pass to the gradient. Max length of 4
+		 * @memberof Gradient
+		 */
+		this.initGradient = (selector, colors) => {
+			this.el = document.querySelector(selector);
+			this.sectionColorsHex = colors.slice(0, 4);
+			this.connect();
+
+			this.initGradientColors();
+			this.initMesh();
+			this.resize();
+			requestAnimationFrame(this.animate);
+			window.addEventListener('resize', this.resize);
+		};
+		/**
+		 * Sets base and first u_waveLayer color. Can be used to respond to bass frequencies (or any for that matter)
+		 * @param primary - Primary color
+		 * @param secondary - Secondary color
+		 * @returns {void}
+		 * @type {(primary: string, secondary?: string) => void}
+		 */
+		this.setBassColor = (primary, secondary) => {
+			this.uniforms.u_baseColor.value = normalizeColor(parseInt(primary.slice(1), 16));
+			if (secondary)
+				this.uniforms.u_waveLayers.value[0].value.color.value = normalizeColor(
+					parseInt(secondary.slice(1), 16)
+				);
+		};
 	}
 	async connect() {
 		this.shaderFiles = {
