@@ -139,9 +139,9 @@
 			source.connect(analyser);
 			analyser.connect(audioContext.destination);
 			const prevSong: App.Track | undefined = $queue.tracks[$queue.current - 1];
-			if (!prevSong || prevSong.metadata?.album !== $metadata?.album) {
+			if ((!prevSong || prevSong.metadata?.album !== $metadata?.album) && $metadata?.colors) {
 				gradient = new Gradient();
-				gradient.initGradient('#gradient-canvas');
+				gradient.initGradient('#gradient-canvas', $metadata?.colors);
 				// setTimeout(() => gradient.initGradient('#gradient-canvas'), 2000);
 			}
 		}
@@ -166,9 +166,6 @@
 	id="gradient-canvas"
 	data-transition-in
 	class="-z-30 w-screen h-screen absolute top-0 left-0 opacity-25"
-	style="--gradient-color-1:{$metadata?.colors[0]};--gradient-color-2:{$metadata
-		?.colors[1]};--gradient-color-3:{$metadata?.colors[2]};--gradient-color-4:{$metadata
-		?.colors[3]};"
 />
 <!-- <div
 	class="w-screen h-screen absolute top-0 left-0 -z-20 brightness-75"

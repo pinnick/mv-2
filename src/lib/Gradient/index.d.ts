@@ -33,9 +33,10 @@ class Gradient {
 	 * Initializes the gradient with the provided selector.
 	 *
 	 * @param {string} selector - The selector to your canvas.
+	 * @param {string[]} colors - The array of colors to pass to the gradient. Max length of 4
 	 * @memberof Gradient
 	 */
-	initGradient(selector: string): void;
+	initGradient(selector: string, colors: string[]): void;
 
 	/**
 	 * Toggles the color at the specified index.

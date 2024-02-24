@@ -436,16 +436,14 @@ function e(object, propertyName, val) {
 class Gradient {
 	constructor() {
 		let resizeTimeout;
-		e(this, 'el', void 0),
-			e(this, 'cssVarRetries', 0),
-			e(this, 'maxCssVarRetries', 200),
-			e(this, 'angle', 0),
-			e(this, 'isLoadedClass', !1),
+		this.el = undefined;
+		this.sectionColorsHex = [];
+		// todo: change all of these
+		e(this, 'angle', 0),
 			e(this, 'isIntersecting', !1),
 			e(this, 'shaderFiles', void 0),
 			e(this, 'vertexShader', void 0),
 			e(this, 'sectionColors', void 0),
-			e(this, 'computedCanvasStyle', void 0),
 			e(this, 'conf', void 0),
 			e(this, 'uniforms', void 0),
 			e(this, 't', 1253106),
@@ -500,24 +498,29 @@ class Gradient {
 					requestAnimationFrame(this.animate);
 				}
 			}),
-			e(this, 'addIsLoadedClass', () => {
-				!this.isLoadedClass &&
-					((this.isLoadedClass = !0),
-					this.el.classList.add('isLoaded'),
-					setTimeout(() => {
-						this.el.parentElement.classList.add('isLoaded');
-					}, 3e3));
-			}),
 			e(this, 'pause', () => {
 				this.conf.playing = false;
 			}),
 			e(this, 'play', () => {
 				requestAnimationFrame(this.animate), (this.conf.playing = true);
 			}),
-			e(this, 'initGradient', (selector) => {
+			/**
+			 * Initializes the gradient with the provided selector.
+			 *
+			 * @param {string} selector - The selector to your canvas.
+			 * @param {string[]} colors - The array of colors to pass to the gradient. Max length of 4
+			 * @memberof Gradient
+			 */
+			(this.initGradient = (selector, colors) => {
 				this.el = document.querySelector(selector);
+				this.sectionColorsHex = colors.slice(0, 4);
 				this.connect();
-				return this;
+
+				this.initGradientColors();
+				this.initMesh();
+				this.resize();
+				requestAnimationFrame(this.animate);
+				window.addEventListener('resize', this.resize);
 			});
 
 		e(
@@ -540,7 +543,7 @@ class Gradient {
 		);
 	}
 	async connect() {
-		(this.shaderFiles = {
+		this.shaderFiles = {
 			vertex:
 				'varying vec3 v_color;\n\nvoid main() {\n  float time = u_time * u_global.noiseSpeed;\n\n  vec2 noiseCoord = resolution * uvNorm * u_global.noiseFreq;\n\n  vec2 st = 1. - uvNorm.xy;\n\n  //\n  // Tilting the plane\n  //\n\n  // Front-to-back tilt\n  float tilt = resolution.y / 2.0 * uvNorm.y;\n\n  // Left-to-right angle\n  float incline = resolution.x * uvNorm.x / 2.0 * u_vertDeform.incline;\n\n  // Up-down shift to offset incline\n  float offset = resolution.x / 2.0 * u_vertDeform.incline * mix(u_vertDeform.offsetBottom, u_vertDeform.offsetTop, uv.y);\n\n  //\n  // Vertex noise\n  //\n\n  float noise = snoise(vec3(\n    noiseCoord.x * u_vertDeform.noiseFreq.x + time * u_vertDeform.noiseFlow,\n    noiseCoord.y * u_vertDeform.noiseFreq.y,\n    time * u_vertDeform.noiseSpeed + u_vertDeform.noiseSeed\n  )) * u_vertDeform.noiseAmp;\n\n  // Fade noise to zero at edges\n  noise *= 1.0 - pow(abs(uvNorm.y), 2.0);\n\n  // Clamp to 0\n  noise = max(0.0, noise);\n\n  vec3 pos = vec3(\n    position.x,\n    position.y + tilt + incline + noise - offset,\n    position.z\n  );\n\n  //\n  // Vertex color, to be passed to fragment shader\n  //\n\n  if (u_active_colors[0] == 1.) {\n    v_color = u_baseColor;\n  }\n\n  for (int i = 0; i < u_waveLayers_length; i++) {\n    if (u_active_colors[i + 1] == 1.) {\n      WaveLayers layer = u_waveLayers[i];\n\n      float noise = smoothstep(\n        layer.noiseFloor,\n        layer.noiseCeil,\n        snoise(vec3(\n          noiseCoord.x * layer.noiseFreq.x + time * layer.noiseFlow,\n          noiseCoord.y * layer.noiseFreq.y,\n          time * layer.noiseSpeed + layer.noiseSeed\n        )) / 2.0 + 0.5\n      );\n\n      v_color = blendNormal(v_color, layer.color, pow(noise, 4.));\n    }\n  }\n\n  //\n  // Finish\n  //\n\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);\n}',
 			noise:
@@ -549,22 +552,22 @@ class Gradient {
 				'//\n// https://github.com/jamieowen/glsl-blend\n//\n\n// Normal\n\nvec3 blendNormal(vec3 base, vec3 blend) {\n\treturn blend;\n}\n\nvec3 blendNormal(vec3 base, vec3 blend, float opacity) {\n\treturn (blendNormal(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Screen\n\nfloat blendScreen(float base, float blend) {\n\treturn 1.0-((1.0-base)*(1.0-blend));\n}\n\nvec3 blendScreen(vec3 base, vec3 blend) {\n\treturn vec3(blendScreen(base.r,blend.r),blendScreen(base.g,blend.g),blendScreen(base.b,blend.b));\n}\n\nvec3 blendScreen(vec3 base, vec3 blend, float opacity) {\n\treturn (blendScreen(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Multiply\n\nvec3 blendMultiply(vec3 base, vec3 blend) {\n\treturn base*blend;\n}\n\nvec3 blendMultiply(vec3 base, vec3 blend, float opacity) {\n\treturn (blendMultiply(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Overlay\n\nfloat blendOverlay(float base, float blend) {\n\treturn base<0.5?(2.0*base*blend):(1.0-2.0*(1.0-base)*(1.0-blend));\n}\n\nvec3 blendOverlay(vec3 base, vec3 blend) {\n\treturn vec3(blendOverlay(base.r,blend.r),blendOverlay(base.g,blend.g),blendOverlay(base.b,blend.b));\n}\n\nvec3 blendOverlay(vec3 base, vec3 blend, float opacity) {\n\treturn (blendOverlay(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Hard light\n\nvec3 blendHardLight(vec3 base, vec3 blend) {\n\treturn blendOverlay(blend,base);\n}\n\nvec3 blendHardLight(vec3 base, vec3 blend, float opacity) {\n\treturn (blendHardLight(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Soft light\n\nfloat blendSoftLight(float base, float blend) {\n\treturn (blend<0.5)?(2.0*base*blend+base*base*(1.0-2.0*blend)):(sqrt(base)*(2.0*blend-1.0)+2.0*base*(1.0-blend));\n}\n\nvec3 blendSoftLight(vec3 base, vec3 blend) {\n\treturn vec3(blendSoftLight(base.r,blend.r),blendSoftLight(base.g,blend.g),blendSoftLight(base.b,blend.b));\n}\n\nvec3 blendSoftLight(vec3 base, vec3 blend, float opacity) {\n\treturn (blendSoftLight(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Color dodge\n\nfloat blendColorDodge(float base, float blend) {\n\treturn (blend==1.0)?blend:min(base/(1.0-blend),1.0);\n}\n\nvec3 blendColorDodge(vec3 base, vec3 blend) {\n\treturn vec3(blendColorDodge(base.r,blend.r),blendColorDodge(base.g,blend.g),blendColorDodge(base.b,blend.b));\n}\n\nvec3 blendColorDodge(vec3 base, vec3 blend, float opacity) {\n\treturn (blendColorDodge(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Color burn\n\nfloat blendColorBurn(float base, float blend) {\n\treturn (blend==0.0)?blend:max((1.0-((1.0-base)/blend)),0.0);\n}\n\nvec3 blendColorBurn(vec3 base, vec3 blend) {\n\treturn vec3(blendColorBurn(base.r,blend.r),blendColorBurn(base.g,blend.g),blendColorBurn(base.b,blend.b));\n}\n\nvec3 blendColorBurn(vec3 base, vec3 blend, float opacity) {\n\treturn (blendColorBurn(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Vivid Light\n\nfloat blendVividLight(float base, float blend) {\n\treturn (blend<0.5)?blendColorBurn(base,(2.0*blend)):blendColorDodge(base,(2.0*(blend-0.5)));\n}\n\nvec3 blendVividLight(vec3 base, vec3 blend) {\n\treturn vec3(blendVividLight(base.r,blend.r),blendVividLight(base.g,blend.g),blendVividLight(base.b,blend.b));\n}\n\nvec3 blendVividLight(vec3 base, vec3 blend, float opacity) {\n\treturn (blendVividLight(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Lighten\n\nfloat blendLighten(float base, float blend) {\n\treturn max(blend,base);\n}\n\nvec3 blendLighten(vec3 base, vec3 blend) {\n\treturn vec3(blendLighten(base.r,blend.r),blendLighten(base.g,blend.g),blendLighten(base.b,blend.b));\n}\n\nvec3 blendLighten(vec3 base, vec3 blend, float opacity) {\n\treturn (blendLighten(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Linear burn\n\nfloat blendLinearBurn(float base, float blend) {\n\t// Note : Same implementation as BlendSubtractf\n\treturn max(base+blend-1.0,0.0);\n}\n\nvec3 blendLinearBurn(vec3 base, vec3 blend) {\n\t// Note : Same implementation as BlendSubtract\n\treturn max(base+blend-vec3(1.0),vec3(0.0));\n}\n\nvec3 blendLinearBurn(vec3 base, vec3 blend, float opacity) {\n\treturn (blendLinearBurn(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Linear dodge\n\nfloat blendLinearDodge(float base, float blend) {\n\t// Note : Same implementation as BlendAddf\n\treturn min(base+blend,1.0);\n}\n\nvec3 blendLinearDodge(vec3 base, vec3 blend) {\n\t// Note : Same implementation as BlendAdd\n\treturn min(base+blend,vec3(1.0));\n}\n\nvec3 blendLinearDodge(vec3 base, vec3 blend, float opacity) {\n\treturn (blendLinearDodge(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Linear light\n\nfloat blendLinearLight(float base, float blend) {\n\treturn blend<0.5?blendLinearBurn(base,(2.0*blend)):blendLinearDodge(base,(2.0*(blend-0.5)));\n}\n\nvec3 blendLinearLight(vec3 base, vec3 blend) {\n\treturn vec3(blendLinearLight(base.r,blend.r),blendLinearLight(base.g,blend.g),blendLinearLight(base.b,blend.b));\n}\n\nvec3 blendLinearLight(vec3 base, vec3 blend, float opacity) {\n\treturn (blendLinearLight(base, blend) * opacity + base * (1.0 - opacity));\n}',
 			fragment:
 				'varying vec3 v_color;\n\nvoid main() {\n  vec3 color = v_color;\n  if (u_darken_top == 1.0) {\n    vec2 st = gl_FragCoord.xy/resolution.xy;\n    color.g -= pow(st.y + sin(-12.0) * st.x, u_shadow_power) * 0.4;\n  }\n  gl_FragColor = vec4(color, 1.0);\n}'
-		}),
-			(this.conf = {
-				presetName: '',
-				wireframe: false,
-				density: [0.06, 0.16],
-				zoom: 1,
-				rotation: 0,
-				playing: true
-			}),
-			document.querySelectorAll('canvas').length < 1
-				? console.log('DID NOT LOAD HERO STRIPE CANVAS')
-				: ((this.minigl = new MiniGl(this.el, null, null, !0)),
-					requestAnimationFrame(() => {
-						this.el &&
-							((this.computedCanvasStyle = getComputedStyle(this.el)), this.waitForCssVars());
-					}));
+		};
+
+		this.conf = {
+			presetName: '',
+			wireframe: false,
+			density: [0.06, 0.16],
+			zoom: 1,
+			rotation: 0,
+			playing: true
+		};
+
+		if (document.querySelectorAll('canvas').length < 1) {
+			console.log('DID NOT LOAD HERO STRIPE CANVAS');
+		} else {
+			this.minigl = new MiniGl(this.el, null, null, true);
+		}
 	}
 	disconnect() {
 		window.removeEventListener('resize', this.resize);
@@ -701,52 +704,11 @@ class Gradient {
 	hideGradientLegend() {
 		(this.isGradientLegendVisible = !1), document.body.classList.remove('isGradientLegendVisible');
 	}
-	init() {
-		this.initGradientColors(), this.initMesh(), this.resize(), requestAnimationFrame(this.animate);
-		window.addEventListener('resize', this.resize);
-	}
-	/*
-	 * Waiting for the css variables to become available, usually on page load before we can continue.
-	 * Using default colors assigned below if no variables have been found after maxCssVarRetries
-	 */
-	waitForCssVars() {
-		if (
-			this.computedCanvasStyle &&
-			-1 !== this.computedCanvasStyle.getPropertyValue('--gradient-color-1').indexOf('#')
-		)
-			this.init(), this.addIsLoadedClass();
-		else {
-			if (((this.cssVarRetries += 1), this.cssVarRetries > this.maxCssVarRetries)) {
-				return (this.sectionColors = [16711680, 16711680, 16711935, 65280, 255]), void this.init();
-			}
-			requestAnimationFrame(() => this.waitForCssVars());
-		}
-	}
 	/*
 	 * Initializes the four section colors by retrieving them from css variables.
 	 */
 	initGradientColors() {
-		this.sectionColors = [
-			'--gradient-color-1',
-			'--gradient-color-2',
-			'--gradient-color-3',
-			'--gradient-color-4'
-		]
-			.map((cssPropertyName) => {
-				let hex = this.computedCanvasStyle.getPropertyValue(cssPropertyName).trim();
-				//Check if shorthand hex value was used and double the length so the conversion in normalizeColor will work.
-				if (4 === hex.length) {
-					const hexTemp = hex
-						.substring(1)
-						.split('')
-						.map((hexTemp) => hexTemp + hexTemp)
-						.join('');
-					hex = `#${hexTemp}`;
-				}
-				return hex && `0x${hex.substring(1)}`;
-			})
-			.filter(Boolean)
-			.map(normalizeColor);
+		this.sectionColors = this.sectionColorsHex.map((c) => normalizeColor(parseInt(c.slice(1), 16)));
 	}
 }
 
