@@ -7,39 +7,69 @@
  *
  * 	 Extended behavior by adding setBassColor(primary: string, secondary?: string) and resize delay - Jordan Pinnick
  */
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 
 import { MiniGl } from './MiniGl';
 
-//Converting colors to proper format
-function normalizeColor(hexCode) {
-	return [((hexCode >> 16) & 255) / 255, ((hexCode >> 8) & 255) / 255, (255 & hexCode) / 255];
+interface Conf {
+	presetName: string;
+	wireframe: boolean;
+	density: [number, number];
+	zoom: number;
+	rotation: number;
+	playing: boolean;
 }
+interface ShaderFiles {
+	vertex: string;
+	noise: string;
+	blend: string;
+	fragment: string;
+}
+type NormalizedColor = [number, number, number];
+//Converting colors to proper format
+const normalizeColor = (hexCode: number): NormalizedColor => [
+	((hexCode >> 16) & 255) / 255,
+	((hexCode >> 8) & 255) / 255,
+	(255 & hexCode) / 255
+];
 
-let resizeTimeout;
-let el = undefined;
-let sectionColorsHex = [];
-let shaderFiles = undefined;
-let vertexShader = undefined;
-let sectionColors = undefined;
-let conf = undefined;
-let uniforms = undefined;
+let resizeTimeout: NodeJS.Timeout;
+let el: HTMLCanvasElement;
+let sectionColorsHex: string[] = [];
+let shaderFiles: ShaderFiles;
+let vertexShader: string;
+let sectionColors: NormalizedColor[];
+
+// TODO: Determine types for MiniGl.js
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let uniforms: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let mesh: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let material: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let geometry: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let minigl: any;
+
 let t = 1253106;
 let last = 0;
-let width = undefined;
-let height = undefined;
-let xSegCount = undefined;
-let ySegCount = undefined;
-let mesh = undefined;
-let material = undefined;
-let geometry = undefined;
-let minigl = undefined;
+let width: number | undefined = undefined;
+let height: number | undefined = undefined;
+let xSegCount: number | undefined = undefined;
+let ySegCount: number | undefined = undefined;
 const amp = 320;
 const seed = Math.round(Math.random() * 1000);
 const freqX = 14e-5;
 const freqY = 29e-5;
 const activeColors = [1, 1, 1, 1];
+const conf: Conf | undefined = {
+	presetName: '',
+	wireframe: false,
+	density: [0.06, 0.16],
+	zoom: 1,
+	rotation: 0,
+	playing: true
+};
 
 const handleResize = () => {
 	clearTimeout(resizeTimeout);
@@ -59,10 +89,10 @@ const handleResize = () => {
 	}, 100);
 };
 
-const animate = (e) => {
-	if (!shouldSkipFrame(e)) {
-		t += Math.min(e - last, 1e3 / 15);
-		last = e;
+const animate = (timeStamp: number) => {
+	if (!shouldSkipFrame(timeStamp)) {
+		t += Math.min(timeStamp - last, 1e3 / 15);
+		last = timeStamp;
 
 		mesh.material.uniforms.u_time.value = t;
 		minigl.render();
@@ -81,9 +111,12 @@ const play = () => {
 	conf.playing = true;
 };
 
-const initGradient = (selector, colors) => {
-	el = document.querySelector(selector);
-	console.log(colors);
+const initGradient = (selector: string, colors: string[]) => {
+	const canvasEl = document.querySelector(selector) as HTMLCanvasElement | null;
+	if (!canvasEl) return console.log('Could not find canvas element!');
+
+	el = canvasEl;
+
 	sectionColorsHex = [];
 	sectionColorsHex = colors.slice(0, 4);
 	connect();
@@ -91,10 +124,10 @@ const initGradient = (selector, colors) => {
 	initGradientColors();
 	initMesh();
 	handleResize();
-	requestAnimationFrame(animate);
 	window.addEventListener('resize', handleResize);
+	play();
 };
-const setBassColor = (primary, secondary) => {
+const setBassColor = (primary: string, secondary?: string) => {
 	if (uniforms) {
 		uniforms.u_baseColor.value = normalizeColor(parseInt(primary.slice(1), 16));
 		if (secondary)
@@ -113,15 +146,6 @@ const connect = async () => {
 			'//\n// https://github.com/jamieowen/glsl-blend\n//\n\n// Normal\n\nvec3 blendNormal(vec3 base, vec3 blend) {\n\treturn blend;\n}\n\nvec3 blendNormal(vec3 base, vec3 blend, float opacity) {\n\treturn (blendNormal(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Screen\n\nfloat blendScreen(float base, float blend) {\n\treturn 1.0-((1.0-base)*(1.0-blend));\n}\n\nvec3 blendScreen(vec3 base, vec3 blend) {\n\treturn vec3(blendScreen(base.r,blend.r),blendScreen(base.g,blend.g),blendScreen(base.b,blend.b));\n}\n\nvec3 blendScreen(vec3 base, vec3 blend, float opacity) {\n\treturn (blendScreen(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Multiply\n\nvec3 blendMultiply(vec3 base, vec3 blend) {\n\treturn base*blend;\n}\n\nvec3 blendMultiply(vec3 base, vec3 blend, float opacity) {\n\treturn (blendMultiply(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Overlay\n\nfloat blendOverlay(float base, float blend) {\n\treturn base<0.5?(2.0*base*blend):(1.0-2.0*(1.0-base)*(1.0-blend));\n}\n\nvec3 blendOverlay(vec3 base, vec3 blend) {\n\treturn vec3(blendOverlay(base.r,blend.r),blendOverlay(base.g,blend.g),blendOverlay(base.b,blend.b));\n}\n\nvec3 blendOverlay(vec3 base, vec3 blend, float opacity) {\n\treturn (blendOverlay(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Hard light\n\nvec3 blendHardLight(vec3 base, vec3 blend) {\n\treturn blendOverlay(blend,base);\n}\n\nvec3 blendHardLight(vec3 base, vec3 blend, float opacity) {\n\treturn (blendHardLight(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Soft light\n\nfloat blendSoftLight(float base, float blend) {\n\treturn (blend<0.5)?(2.0*base*blend+base*base*(1.0-2.0*blend)):(sqrt(base)*(2.0*blend-1.0)+2.0*base*(1.0-blend));\n}\n\nvec3 blendSoftLight(vec3 base, vec3 blend) {\n\treturn vec3(blendSoftLight(base.r,blend.r),blendSoftLight(base.g,blend.g),blendSoftLight(base.b,blend.b));\n}\n\nvec3 blendSoftLight(vec3 base, vec3 blend, float opacity) {\n\treturn (blendSoftLight(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Color dodge\n\nfloat blendColorDodge(float base, float blend) {\n\treturn (blend==1.0)?blend:min(base/(1.0-blend),1.0);\n}\n\nvec3 blendColorDodge(vec3 base, vec3 blend) {\n\treturn vec3(blendColorDodge(base.r,blend.r),blendColorDodge(base.g,blend.g),blendColorDodge(base.b,blend.b));\n}\n\nvec3 blendColorDodge(vec3 base, vec3 blend, float opacity) {\n\treturn (blendColorDodge(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Color burn\n\nfloat blendColorBurn(float base, float blend) {\n\treturn (blend==0.0)?blend:max((1.0-((1.0-base)/blend)),0.0);\n}\n\nvec3 blendColorBurn(vec3 base, vec3 blend) {\n\treturn vec3(blendColorBurn(base.r,blend.r),blendColorBurn(base.g,blend.g),blendColorBurn(base.b,blend.b));\n}\n\nvec3 blendColorBurn(vec3 base, vec3 blend, float opacity) {\n\treturn (blendColorBurn(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Vivid Light\n\nfloat blendVividLight(float base, float blend) {\n\treturn (blend<0.5)?blendColorBurn(base,(2.0*blend)):blendColorDodge(base,(2.0*(blend-0.5)));\n}\n\nvec3 blendVividLight(vec3 base, vec3 blend) {\n\treturn vec3(blendVividLight(base.r,blend.r),blendVividLight(base.g,blend.g),blendVividLight(base.b,blend.b));\n}\n\nvec3 blendVividLight(vec3 base, vec3 blend, float opacity) {\n\treturn (blendVividLight(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Lighten\n\nfloat blendLighten(float base, float blend) {\n\treturn max(blend,base);\n}\n\nvec3 blendLighten(vec3 base, vec3 blend) {\n\treturn vec3(blendLighten(base.r,blend.r),blendLighten(base.g,blend.g),blendLighten(base.b,blend.b));\n}\n\nvec3 blendLighten(vec3 base, vec3 blend, float opacity) {\n\treturn (blendLighten(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Linear burn\n\nfloat blendLinearBurn(float base, float blend) {\n\t// Note : Same implementation as BlendSubtractf\n\treturn max(base+blend-1.0,0.0);\n}\n\nvec3 blendLinearBurn(vec3 base, vec3 blend) {\n\t// Note : Same implementation as BlendSubtract\n\treturn max(base+blend-vec3(1.0),vec3(0.0));\n}\n\nvec3 blendLinearBurn(vec3 base, vec3 blend, float opacity) {\n\treturn (blendLinearBurn(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Linear dodge\n\nfloat blendLinearDodge(float base, float blend) {\n\t// Note : Same implementation as BlendAddf\n\treturn min(base+blend,1.0);\n}\n\nvec3 blendLinearDodge(vec3 base, vec3 blend) {\n\t// Note : Same implementation as BlendAdd\n\treturn min(base+blend,vec3(1.0));\n}\n\nvec3 blendLinearDodge(vec3 base, vec3 blend, float opacity) {\n\treturn (blendLinearDodge(base, blend) * opacity + base * (1.0 - opacity));\n}\n\n// Linear light\n\nfloat blendLinearLight(float base, float blend) {\n\treturn blend<0.5?blendLinearBurn(base,(2.0*blend)):blendLinearDodge(base,(2.0*(blend-0.5)));\n}\n\nvec3 blendLinearLight(vec3 base, vec3 blend) {\n\treturn vec3(blendLinearLight(base.r,blend.r),blendLinearLight(base.g,blend.g),blendLinearLight(base.b,blend.b));\n}\n\nvec3 blendLinearLight(vec3 base, vec3 blend, float opacity) {\n\treturn (blendLinearLight(base, blend) * opacity + base * (1.0 - opacity));\n}',
 		fragment:
 			'varying vec3 v_color;\n\nvoid main() {\n  vec3 color = v_color;\n  if (u_darken_top == 1.0) {\n    vec2 st = gl_FragCoord.xy/resolution.xy;\n    color.g -= pow(st.y + sin(-12.0) * st.x, u_shadow_power) * 0.4;\n  }\n  gl_FragColor = vec4(color, 1.0);\n}'
-	};
-
-	conf = {
-		presetName: '',
-		wireframe: false,
-		density: [0.06, 0.16],
-		zoom: 1,
-		rotation: 0,
-		playing: true
 	};
 
 	if (document.querySelectorAll('canvas').length < 1) {
@@ -244,7 +268,8 @@ const initMesh = () => {
 	mesh = new minigl.Mesh(geometry, material);
 };
 
-const shouldSkipFrame = (e) => window.document.hidden || !conf.playing || parseInt(e, 10) % 2 === 0;
+const shouldSkipFrame = (timeStamp: number) =>
+	window.document.hidden || !conf.playing || Math.round(timeStamp) % 2 === 0;
 
 // const updateFrequency = (e) => {
 // 	freqX += e;
