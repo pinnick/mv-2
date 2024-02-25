@@ -20,7 +20,6 @@ function normalizeColor(hexCode) {
 let resizeTimeout;
 let el = undefined;
 let sectionColorsHex = [];
-let angle = 0;
 let shaderFiles = undefined;
 let vertexShader = undefined;
 let sectionColors = undefined;
@@ -36,11 +35,11 @@ let mesh = undefined;
 let material = undefined;
 let geometry = undefined;
 let minigl = undefined;
-let amp = 320;
-let seed = 5;
-let freqX = 14e-5;
-let freqY = 29e-5;
-let activeColors = [1, 1, 1, 1];
+const amp = 320;
+const seed = Math.round(Math.random() * 1000);
+const freqX = 14e-5;
+const freqY = 29e-5;
+const activeColors = [1, 1, 1, 1];
 
 const handleResize = () => {
 	clearTimeout(resizeTimeout);
@@ -245,13 +244,13 @@ const initMesh = () => {
 
 const shouldSkipFrame = (e) => window.document.hidden || !conf.playing || parseInt(e, 10) % 2 === 0;
 
-const updateFrequency = (e) => {
-	freqX += e;
-	freqY += e;
-};
-const toggleColor = (index) => {
-	activeColors[index] = 0 === activeColors[index] ? 1 : 0;
-};
+// const updateFrequency = (e) => {
+// 	freqX += e;
+// 	freqY += e;
+// };
+// const toggleColor = (index) => {
+// 	activeColors[index] = 0 === activeColors[index] ? 1 : 0;
+// };
 
 const initGradientColors = () => {
 	sectionColors = sectionColorsHex.map((c) => normalizeColor(parseInt(c.slice(1), 16)));
