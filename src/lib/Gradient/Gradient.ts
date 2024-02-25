@@ -95,11 +95,13 @@ const initGradient = (selector, colors) => {
 	window.addEventListener('resize', handleResize);
 };
 const setBassColor = (primary, secondary) => {
-	uniforms.u_baseColor.value = normalizeColor(parseInt(primary.slice(1), 16));
-	if (secondary)
-		uniforms.u_waveLayers.value[0].value.color.value = normalizeColor(
-			parseInt(secondary.slice(1), 16)
-		);
+	if (uniforms) {
+		uniforms.u_baseColor.value = normalizeColor(parseInt(primary.slice(1), 16));
+		if (secondary)
+			uniforms.u_waveLayers.value[0].value.color.value = normalizeColor(
+				parseInt(secondary.slice(1), 16)
+			);
+	}
 };
 const connect = async () => {
 	shaderFiles = {
@@ -161,7 +163,7 @@ const initMaterial = () => {
 		u_vertDeform: new minigl.Uniform({
 			value: {
 				incline: new minigl.Uniform({
-					value: Math.sin(angle) / Math.cos(angle)
+					value: 0
 				}),
 				offsetTop: new minigl.Uniform({
 					value: -0.5

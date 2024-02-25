@@ -10,7 +10,7 @@
 	} from '$lib/utils/util';
 	import { mediaElement, metadata, queue, playing } from '$lib/store';
 	import { detect } from 'detect-browser';
-	import { initGradient, setBassColor, disconnect, pause } from '$lib/Gradient';
+	import { initGradient, setBassColor, disconnect, pause } from '$lib/Gradient/Gradient';
 	import { PlayState } from '$lib/types';
 
 	import { colord, extend } from 'colord';
@@ -130,9 +130,7 @@
 	}
 
 	$: if ($mediaElement) {
-		console.log('hol up');
 		if ($mediaElement.src !== fileSrc) {
-			console.log('restart!');
 			fileSrc = $mediaElement.src;
 			source?.disconnect();
 
