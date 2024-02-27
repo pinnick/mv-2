@@ -58,7 +58,7 @@ let height: number | undefined = undefined;
 let xSegCount: number | undefined = undefined;
 let ySegCount: number | undefined = undefined;
 const amp = 320;
-const seed = Math.round(Math.random() * 1000);
+let seed = Math.round(Math.random() * 1000);
 const freqX = 14e-5;
 const freqY = 29e-5;
 const activeColors = [1, 1, 1, 1];
@@ -111,14 +111,15 @@ const play = () => {
 	conf.playing = true;
 };
 
-const initGradient = (selector: string, colors: string[]) => {
+const initGradient = (selector: string, colors: string[], setSeed?: number) => {
 	const canvasEl = document.querySelector(selector) as HTMLCanvasElement | null;
 	if (!canvasEl) return console.log('Could not find canvas element!');
-
+	if (setSeed) seed = setSeed;
 	el = canvasEl;
 
 	sectionColorsHex = [];
 	sectionColorsHex = colors.slice(0, 4);
+	console.log(`seed: ${seed}`);
 	connect();
 
 	initGradientColors();
