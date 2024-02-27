@@ -165,7 +165,7 @@ export const getMetadata = async (
 		fetchMetadata = await getOtherMetadata(arrayBuffer);
 	}
 
-	let colors: string[] = [];
+	const colors: string[] = [];
 	let accent: string = '';
 
 	if (fetchMetadata.albumCoverUrl) {
@@ -177,25 +177,30 @@ export const getMetadata = async (
 		});
 		console.log({ colorsData });
 
-		colorsData = colorsData.filter((e) => e.area > 0.01);
-
-		colors = colorsData
+		colorsData = colorsData
+			.filter((e) => e.area > 0.01)
 			.sort((a, b) => b.area - a.area)
 			.slice(0, 4)
-			.sort((a, b) => b.lightness - a.lightness)
-			.map((c) => c.hex);
+			.sort((a, b) => b.lightness - a.lightness);
+
+		for (const c of colorsData) {
+			if (c.lightness < 0.1) {
+				c.hex = '#555555';
+			}
+			colors.push(c.hex);
+		}
 
 		console.log({ colors });
 
 		// Mimic colors for case of small length
-		if (!colors[1]) colors[1] = colord(colors[0]).saturate(0.25).darken(0.1).toHex();
-		if (!colors[2]) colors[2] = colord(colors[0]).mix(colors[1]).saturate(0.1).toHex();
+		if (!colors[1]) colors[1] = colord(colors[0]).darken(0.2).toHex();
+		if (!colors[2]) colors[2] = colord(colors[0]).mix(colors[1]).darken(0.2).toHex();
+		if (!colors[3]) colors[3] = colord(colors[0]).mix(colors[1]).mix(colors[2]).darken(0.2).toHex();
 
 		accent =
 			colorsData
-				.filter((e) => e.saturation < 0.9)
-				.filter((e) => e.intensity < 0.97)
-				.sort((a, b) => b.intensity - a.intensity)[0]?.hex || '#cccccc';
+				.filter((e) => e.saturation < 0.9 && e.intensity < 0.97 && e.lightness <= 0.6)
+				.sort((a, b) => b.intensity - a.intensity)[0]?.hex || '#999999';
 
 		console.log({ accent });
 	}
