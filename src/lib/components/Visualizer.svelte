@@ -143,7 +143,7 @@
 				(prevSong === undefined || prevSong.metadata?.album !== $metadata?.album) &&
 				$metadata?.colors
 			) {
-				initGradient('#gradient-canvas', $metadata?.colors);
+				initGradient('#gradient-canvas', $metadata?.colors, $queue.demo ? 150 : undefined);
 			}
 		}
 	}
