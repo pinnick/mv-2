@@ -10,7 +10,12 @@
 	} from '$lib/utils/util';
 	import { mediaElement, metadata, queue, playing } from '$lib/store';
 	import { detect } from 'detect-browser';
-	import { initGradient, setBassColor, disconnect, pause } from '$lib/Gradient/Gradient';
+	import {
+		initGradient,
+		setBassColor,
+		disconnect as disconnectGradient,
+		pause
+	} from '$lib/Gradient/Gradient';
 	import { PlayState } from '$lib/types';
 
 	import { colord, extend } from 'colord';
@@ -22,11 +27,11 @@
 
 	export let upperBounds: number[];
 	export let sumTotal: number;
-	let audioContext: AudioContext;
-	let analyser: AnalyserNode;
-	let bufferLength: number | undefined;
+	let audioContext: AudioContext | undefined = undefined;
+	let bufferLength: number | undefined = undefined;
+	let analyser: AnalyserNode | undefined = undefined;
+	let source: MediaElementAudioSourceNode | undefined = undefined;
 	let dataArray: Uint8Array;
-	let source: MediaElementAudioSourceNode;
 	let fileSrc: string;
 	$: visible = !!$mediaElement;
 	$: barCount = upperBounds.length - 1;
@@ -36,7 +41,7 @@
 	let interval: NodeJS.Timeout | null = null;
 	// let bassColor: string;
 	const calcHeights = () => {
-		if (!analyser) return;
+		if (!analyser || !audioContext) return;
 		analyser.getByteFrequencyData(dataArray);
 		const newHeights: number[] = [];
 		for (let i = 0; i < barCount; i++) {
@@ -133,24 +138,25 @@
 		if ($mediaElement.src !== fileSrc) {
 			fileSrc = $mediaElement.src;
 			source?.disconnect();
+			if (audioContext && analyser) {
+				source = audioContext.createMediaElementSource($mediaElement);
+				source.connect(analyser);
+				analyser.connect(audioContext.destination);
+				const prevSong: App.Track | undefined = $queue.tracks[$queue.current - 1];
 
-			source = audioContext.createMediaElementSource($mediaElement);
-			source.connect(analyser);
-			analyser.connect(audioContext.destination);
-			const prevSong: App.Track | undefined = $queue.tracks[$queue.current - 1];
-
-			if (
-				(prevSong === undefined || prevSong.metadata?.album !== $metadata?.album) &&
-				$metadata?.colors
-			) {
-				initGradient('#gradient-canvas', $metadata?.colors, $queue.demo ? 150 : undefined);
+				if (
+					(prevSong === undefined || prevSong.metadata?.album !== $metadata?.album) &&
+					$metadata?.colors
+				) {
+					initGradient('#gradient-canvas', $metadata?.colors, $queue.demo ? 150 : undefined);
+				}
 			}
 		}
 	}
 	onDestroy(() => {
-		source.disconnect();
-		audioContext.close();
-		disconnect();
+		source?.disconnect();
+		audioContext?.close();
+		if (typeof window !== 'undefined') disconnectGradient();
 	});
 </script>
 
