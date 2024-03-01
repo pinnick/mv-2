@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PlayState } from '$lib/types';
 	import { onMount } from 'svelte';
-	import { delay, getMetadata, invMel } from '$lib/utils/util';
+	import { getMetadata, invMel } from '$lib/utils/util';
 	import { mediaElement, playing, queue, metadata } from '$lib/store';
 	import MoreButton from '$lib/components/Player/MoreButton.svelte';
 	import Visualizer from '$lib/components/Visualizer.svelte';
@@ -16,6 +16,7 @@
 	let innerHeight: number;
 	let split = 75;
 	let maxMel = 2850;
+
 	$: if (innerWidth < 1200) {
 		split = 30;
 	} else if (innerWidth < 1350) {
@@ -25,6 +26,7 @@
 	} else {
 		split = 75;
 	}
+
 	$: melInterval = maxMel / split;
 	let upperBounds: number[] = [];
 	$: calculateBounds(melInterval);
@@ -91,7 +93,7 @@
 		// Bind mediaElement to playing
 		playing.subscribe(async (newPlaying) => {
 			if (!$mediaElement) {
-				// PLAY DEMO SONG
+				// Play demo song
 				if (newPlaying === PlayState.Playing) {
 					const url = '/demo-curry-320.mp3';
 					const blob = await fetch(url).then((r) => r.blob());

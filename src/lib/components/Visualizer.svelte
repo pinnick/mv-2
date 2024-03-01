@@ -39,7 +39,6 @@
 	const bassSmoothing = 0.005;
 	let heights: number[] = new Array(barCount).fill(0);
 	let interval: NodeJS.Timeout | null = null;
-	// let bassColor: string;
 	const calcHeights = () => {
 		if (!analyser || !audioContext) return;
 		analyser.getByteFrequencyData(dataArray);
@@ -175,7 +174,3 @@
 	data-transition-in
 	class="-z-30 w-screen h-screen absolute top-0 left-0 opacity-25"
 />
-<!-- <div
-	class="w-screen h-screen absolute top-0 left-0 -z-20 brightness-75"
-	style="opacity: {bass}; background-color: {$metadata?.color || '#ffffff'}"
-></div> -->
