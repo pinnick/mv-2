@@ -4,6 +4,8 @@ Music visualizer stylized in a manner similar to Apple Music for iOS.
 
 ![Screenshot of the web app](/images/app.png)
 
+I spent a very long time precisely mimicking Apple Music, probably way too long. Enjoy!
+
 ## How to use:
 
 - Press the play button to play a demo song. It may take a while for the song to download, so please be patient :)
