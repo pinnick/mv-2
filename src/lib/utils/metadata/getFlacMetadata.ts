@@ -1,4 +1,5 @@
 import { getString } from '$lib/utils/util';
+
 export const getFlacMetadata = async (
 	arrayBuffer: ArrayBuffer
 ): Promise<{ tags: App.VorbisTags; albumCoverUrl: string | null }> => {
@@ -77,6 +78,7 @@ const parseVorbisCommentBlock = (dataView: DataView, offset: number): Record<str
 
 	return tags;
 };
+
 const parsePictureBlock = (dataView: DataView, offset: number): string | null => {
 	// Skip picture type (4 bytes)
 	offset += 4;

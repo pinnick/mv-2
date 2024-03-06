@@ -1,5 +1,3 @@
-// this is still installed
-// import FastAverageColor from 'fast-average-color';
 import { getFlacMetadata } from '$lib/utils/metadata/getFlacMetadata';
 import { extractColors } from 'extract-colors';
 import { getMp3Metadata } from '$lib/utils/metadata/getMp3Metadata';
