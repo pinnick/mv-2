@@ -12,9 +12,9 @@
 	$: maskRight = overflow ? '92%' : '100%';
 </script>
 
-<div class="whitespace-nowrap -ml-8 marquee gap-4" bind:clientWidth={parentWidth}>
+<div class="whitespace-nowrap -ml-4 marquee gap-4" bind:clientWidth={parentWidth}>
 	<p
-		class="w-min max-w-full marquee-text pl-9 flex"
+		class="w-min max-w-full marquee-text pl-5 flex"
 		style="--opacity: {opacity}; --maskRight: {maskRight}; gap: {overflowOffset}px"
 	>
 		<span bind:clientWidth={childWidth} style="margin-left: -{marginLeft}px"><slot /></span>
