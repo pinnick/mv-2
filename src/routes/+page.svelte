@@ -133,16 +133,16 @@
 <div class="w-full h-screen flex overflow-hidden select-none">
 	<!-- Left bar -->
 	<div
-		class=" flex items-center justify-center flex-col gap-4 flex-shrink-0 {innerWidth > 1050
-			? 'w-[472px] px-7 ml-20'
-			: 'w-[416px] mx-auto'}"
+		class="w-full flex items-center justify-center flex-col gap-4 flex-shrink-0 {innerWidth > 1050
+			? 'max-w-[472px] px-7 ml-20'
+			: 'max-w-[416px] mx-auto'}"
 	>
 		<Cover />
-		<div class="pr-2 pl-2.5 flex justify-center items-center w-full max-w-full">
+		<div class="pr-6 pl-5 flex justify-center items-center w-full max-w-full">
 			<TitleArtist />
 			<MoreButton />
 		</div>
-		<div class="w-full px-3">
+		<div class="w-full px-6">
 			<Progress />
 			<PlaybackButtons />
 			<Sound />
