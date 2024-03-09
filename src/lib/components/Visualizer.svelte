@@ -36,7 +36,27 @@
 	$: visible = !!$mediaElement;
 	$: barCount = upperBounds.length - 1;
 	let prevBass: [number, number] = [0, 0];
-	const bassSmoothing = 0.005;
+
+	const props = [
+		{ bassSmoothing: 0.005, intervalDelay: 6 },
+		{ bassSmoothing: 0.01, intervalDelay: 4 },
+		{ bassSmoothing: 0.02, intervalDelay: 2 }
+	];
+	let currProps: 0 | 1 | 2 = 0;
+
+	const handlePropsChange = () => {
+		console.log('changed props');
+		switch (currProps) {
+			case 2:
+				currProps = 0;
+				break;
+			default:
+				currProps += 1;
+				break;
+		}
+	};
+
+	$: bassSmoothing = props[currProps].bassSmoothing;
 	let heights: number[] = new Array(barCount).fill(0);
 	let interval: NodeJS.Timeout | null = null;
 	const calcHeights = () => {
@@ -123,7 +143,7 @@
 		}
 	}
 	$: if ($playing === PlayState.Playing && !interval) {
-		interval = setInterval(calcHeights, 6);
+		interval = setInterval(calcHeights, props[currProps].intervalDelay);
 	} else if (interval) {
 		setTimeout(() => {
 			if (interval) {
@@ -163,6 +183,7 @@
 	<div
 		class="w-full max-w-7xl h-[500px] flex items-center justify-center gap-[2px]"
 		transition:fade|global
+		on:click={handlePropsChange}
 	>
 		{#each heights as dot, i (i)}
 			<Dot value={dot} />
