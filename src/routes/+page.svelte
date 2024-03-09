@@ -138,7 +138,7 @@
 			: 'max-w-[416px] mx-auto'}"
 	>
 		<Cover />
-		<div class="pr-6 pl-5 flex justify-center items-center w-full max-w-full">
+		<div class="px-5 flex justify-center items-center w-full max-w-full">
 			<TitleArtist />
 			<MoreButton />
 		</div>
