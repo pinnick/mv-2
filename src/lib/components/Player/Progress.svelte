@@ -7,7 +7,6 @@
 
 	// Progress of the song, in seconds
 	let progress = 0;
-	let fileSrc: string;
 	let duration = 1;
 	let barWidth: number;
 	let fromLeft: number;
@@ -24,13 +23,7 @@
 			remainingString = '–' + formatTime(roundedRemaining);
 		}
 	}
-	$: progress || fileSrc, updateStrings();
-	// TODO: This is the same code used in Visualizer.svelte, and it involves a duplicate variable, fileSrc.
-
-	$: if ($mediaElement && $mediaElement.src !== fileSrc && $mediaElement.readyState === 4) {
-		fileSrc = $mediaElement.src;
-		progress = 0;
-	}
+	$: progress, updateStrings();
 
 	$: if ($mediaElement) {
 		initialize();
