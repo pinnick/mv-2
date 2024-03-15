@@ -162,11 +162,9 @@
 				source.connect(analyser);
 				analyser.connect(audioContext.destination);
 				const prevSong: App.Track | undefined = $queue.tracks[$queue.current - 1];
-
-				if (
-					(prevSong === undefined || prevSong.metadata?.album !== $metadata?.album) &&
-					$metadata?.colors
-				) {
+				const sameAlbumCover =
+					prevSong !== undefined && prevSong.metadata?.album === $metadata?.album;
+				if (!sameAlbumCover && $metadata?.colors && $metadata.colors.length > 1) {
 					initGradient('#gradient-canvas', $metadata?.colors, $queue.demo ? 150 : undefined);
 				}
 			}
