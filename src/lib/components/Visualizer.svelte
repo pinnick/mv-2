@@ -42,18 +42,11 @@
 		{ bassSmoothing: 0.01, intervalDelay: 4 },
 		{ bassSmoothing: 0.02, intervalDelay: 2 }
 	];
-	let currProps: 0 | 1 | 2 = 0;
+	let currProps: number = 0;
 
 	const handlePropsChange = () => {
-		console.log('changed props');
-		switch (currProps) {
-			case 2:
-				currProps = 0;
-				break;
-			default:
-				currProps += 1;
-				break;
-		}
+		if (currProps === 2) currProps = 0;
+		else currProps += 1;
 	};
 
 	$: bassSmoothing = props[currProps].bassSmoothing;
@@ -181,7 +174,6 @@
 	<div
 		class="w-full max-w-7xl h-[500px] flex items-center justify-center gap-[2px]"
 		transition:fade|global
-		on:click={handlePropsChange}
 	>
 		{#each heights as dot, i (i)}
 			<Dot value={dot} />
