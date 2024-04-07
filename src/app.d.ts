@@ -31,7 +31,7 @@ declare global {
 		interface Track {
 			url: string;
 			file?: File;
-			type?: 'audio/flac' | 'audio/mpeg';
+			type?: 'audio/flac' | 'audio/mpeg' | 'audio/mp4';
 			arrayBuffer?: ArrayBuffer;
 			metadata?: Metadata;
 		}

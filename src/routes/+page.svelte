@@ -95,10 +95,10 @@
 			if (!$mediaElement) {
 				// Play demo song
 				if (newPlaying === PlayState.Playing) {
-					const url = '/demo-curry-320.mp3';
+					const url = '/demo-leaves-320.m4a';
 					const blob = await fetch(url).then((r) => r.blob());
 					const arrayBuffer = await blob.arrayBuffer();
-					$queue = { current: 0, tracks: [{ url, arrayBuffer, type: 'audio/mpeg' }], demo: true };
+					$queue = { current: 0, tracks: [{ url, arrayBuffer, type: 'audio/mp4' }], demo: true };
 				}
 				return null;
 			}
