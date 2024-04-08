@@ -35,7 +35,7 @@
 			/>
 		{:else}
 			<!-- TODO: FIX RESIZE (redo?) -->
-			<div class="rounded-xl bg-neutral-600/70 h-96">
+			<div class="rounded-xl bg-neutral-600/70 h-[330px] 2xl:h-96">
 				<svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
 					<g fill="none" fill-rule="evenodd"
 						><path fill="genericJoe" class="fill-genericJoe" d="M0 0h100v100H0z" /><path

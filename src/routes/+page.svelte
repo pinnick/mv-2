@@ -13,7 +13,6 @@
 	import Cover from '$lib/components/Player/Cover.svelte';
 
 	let innerWidth: number;
-	let innerHeight: number;
 	let split = 75;
 	let maxMel = 2850;
 
@@ -129,13 +128,11 @@
 </script>
 
 <Background />
-<svelte:window bind:innerWidth bind:innerHeight />
+<svelte:window bind:innerWidth />
 <div class="w-full h-screen flex overflow-hidden select-none">
 	<!-- Left bar -->
 	<div
-		class="w-full flex items-center justify-center flex-col gap-4 flex-shrink-0 {innerWidth > 1050
-			? 'max-w-[472px] px-7 ml-20'
-			: 'max-w-[416px] mx-auto'}"
+		class="w-full flex items-center justify-center flex-col gap-4 flex-shrink-0 max-w-[416px] mx-auto 2xl:max-w-[472px] lg:px-7 lg:ml-20"
 	>
 		<Cover />
 		<div class="px-5 flex justify-center items-center w-full max-w-full">
@@ -150,10 +147,7 @@
 	</div>
 	<!-- Lyrics & Vis -->
 	<div
-		class="h-full flex flex-col justify-center items-center font-bold flex-1 text-white {innerWidth >
-		1050
-			? 'block'
-			: 'hidden'}"
+		class="h-full flex-col justify-center items-center font-bold flex-1 text-white hidden lg:flex"
 	>
 		<Visualizer bind:upperBounds sumTotal={1} />
 	</div>
